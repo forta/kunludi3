@@ -1,0 +1,110 @@
+Entorno “pseudo netsh”.
+
+node kl3-client.js /mode chat /lang en  (en /mode web; permitiría jugar en web sencilla local)
+Pulsa ? para obtener ayuda / Press ? to get help
+
+kl3/> ?
+
+Current context: /
+Available modules: (<module> ? to get module help)
+loader: game loader
+Available commands:  (<command> ? to get help about the command)
+?, help: to get help
+set locale: change the language of this interface
+list locales: list of available languages
+exec: ejecuta un archivo de script
+
+kl3/> set idioma ?
+
+Permite indicar el idioma de esta interfaz. Ejemplo: set idioma eo
+
+kl3/> list locales
+
+Available languages:
+es: Español (*)
+en: English
+eo: esperanto
+fr: Français
+
+kl3/> set local es
+
+Language changed to English
+Idioma cambiado a Español
+
+kl3/> ?
+
+Contexto actual: /
+Módulos disponibles: (<módulo> ? para ayuda específica del módulo)
+cargador: módulo para cargar el juego
+Comandos disponibles:  (<comando> ? para ayuda específica del comando)
+?, ayuda: para obtener ayuda
+set idioma: cambiar idioma de esta interfaz
+list idiomas: lista de idiomas disponibles
+
+
+kl3/> cargador
+
+Contexto cambiado a: cargador
+
+kl3/cargador> cargador ?
+
+Permite cargar el juego.
+
+
+Comandos heredados del contexto /:
+set idioma: cambiar idioma de esta interfaz
+list idiomas: lista de idiomas disponibles
+
+Comandos de este contexto:
+set source: ubicación del juego final o de un listado de juegos (games.json), puede ser un directorio local o una URL base.
+set rol (host, guess): host: tú ejecutas el juego; guess: te conectas a juego compartido por otro
+set URL: (sólo si remoto): URL apuntando a fichero json que apunta a los juegos.
+set directory: (sólo si local): directorio donde estará el fichero games.json
+list games: en caso de haber cargado una lista de juegos 
+set game #: elige uno de los juegos de la lista (si apunta a otro games.json,  se actualizará la lista de juegos).
+show game #: del juego seleccionado.
+dump: muestra opciones actuales de este contexto
+play: si ya se apunta a un juego, se pasa al contexto game y el contexto cargador queda sólo en modo lectura
+
+kl3/cargador> set game c:\partidas\
+Lista de juegos disponibles cargada
+
+kl3/cargador> list games
+1> “Mi Querida Hermana” [es, en]
+2> “Fiesta salvaje” [es, en]
+
+kl3/cargador> show game 1
+Juego “Mi Querida Hermana”
+Autor: Fran Harto Resol
+Año: 2018
+Descripción: bla, bla, bla
+Idiomas disponibles: es en
+Tamaño: 242Kb (proceso: 12Kb, idiomas: 30Kb, multimedia: 200Kb)
+
+kl3/cargador> set game 1
+Juego “Mi Querida Hermana” cargado. Comando play para iniciar motor del juego.
+
+kl3/cargador> play
+Juego “Mi querida Hermana” disponible. Cambio a contexto game.
+
+kl3/game> ?
+Comandos heredados del contexto /:
+set idioma: cambiar idioma de esta interfaz
+list idiomas: lista de idiomas disponibles
+
+Comandos de este contexto:
+show details: detalles del juego indicados en el cargador
+start: empezar partida nueva (si no se elige una partida guardada) o la seleccionada en el subtexto files
+
+Subcontextos disponibles:
+files: elegir una partida guardada o guardar el estado de la partida en curso
+broadcast: (sólo después de iniciarse el juego) si se es host del juego, se puede compartir a través de este módulo
+
+kl3/game> start
+
+Entrando en modo juego “>” (a partir de ahora los comandos de sistema deben ir antecedidos por /):
+
+Estás en la casa de … bla, bla
+> /?
+
+

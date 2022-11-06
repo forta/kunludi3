@@ -14,8 +14,9 @@ module.exports = exports = { // commonjs
 	addCommand:addCommand,
 	setAliases:setAliases,
 	translateContext:translateContext,
-	selectCommand:selectCommand,
+	commandExists:commandExists,
 	showContext:showContext,
+	getCommands:getCommands,
 	showCommands:showCommands,
 	showSubcontexts:showSubcontexts
 }
@@ -71,7 +72,7 @@ function setContext(contextIn) {
 }
 
 function goBack() {
-	
+
 }
 
 
@@ -95,7 +96,7 @@ function addCommand (com) {
 		return
 	}
 	showLog (4, "Command " + wrapperSt(com) + " added in context")
-	commandsPtr.push ({id:com, aliases:[]})	
+	commandsPtr.push ({id:com, aliases:[]})
 }
 
 function setAliases (com, aliases) {
@@ -114,20 +115,31 @@ function setAliases (com, aliases) {
 			showLog (3, "Alias " + wrapperSt(aliases[a]) + " repeated in context for  command " + wrapperSt(com))
 		}
 	}
-	
+
 }
 
 function translateContext (target, context, com, aliases) {
 
 }
 
-
-function selectCommand () {
-	
+function commandExists (com) {
+	let index = arrayObjectIndexOf (commandsPtr, "id", com)
+	if (index < 0) {
+		return false
+	}
+	return true
 }
 
 function showContext () {
-	
+
+}
+
+function getCommands () {
+	let coms = []
+	for (let c in commandsPtr) {
+		coms.push (commandsPtr[c])
+	}
+	return coms
 }
 
 function showCommands (context) {
@@ -138,7 +150,7 @@ function showCommands (context) {
 }
 
 function showSubcontexts () {
-	
+
 }
 
 // initialization

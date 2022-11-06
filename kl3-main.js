@@ -1,33 +1,62 @@
 // testing kl3-crumbs module for kunludi3
 
+let localLoader = require ('./kl3-loader.js')
+
 //var crumbs = require ('kl3-crumbs') // the multilingual breadcrumbs
-var crumbs = require ('./modulos/kl3-crumbs/index.js')
+let crumbs = require ('./modulos/kl3-crumbs/index.js')
 
-// crumbs is used only to add the available commands but nothing is executed inside
-
-
-// root commands
-crumbs.addCommand ("help")
-crumbs.addCommand ("set-locale")
 crumbs.addCommand ("exit")
-
 crumbs.setAliases ("exit", ["bye", "quit"])
-crumbs.showCommands ()
-
 crumbs.addLocale ("es")
 crumbs.translateContext ("es", "root", "exit", ["salir", "fin"])
 
-crumbs.addContext ("loader")
+crumbs.addCommand ("help")
+crumbs.addContext ("local-loader")
 crumbs.addContext ("game")
 
-crumbs.selectCommand ("set-locale")
+// to-do: interactive interface
+
+// begin subcontext local-loader ------------------------------------
+
+
+let llcrumbs=localLoader.getCrumbs()
+
+// crumbs.setContext ("local-loader", llcrumbs)
+
+let coms
+
+localLoader.refreshCrumbs()
+coms = llcrumbs.getCommands () // crumbs to get choices but not to exec them (no filters in the example)
+localLoader.selectCommand ("set-rol", "host") // "set-rol" is supposed in coms array
+llcrumbs.showCommands () // dump
+
+localLoader.selectCommand ("set-datasource", "./data/games/")
+
+let gameList = localLoader.selectCommand ("get-gamelist")
+
+localLoader.selectCommand ("set-game", "0")
+
+let game = localLoader.selectCommand ("get-game")
+
+// crumbs.setContext ("..") // back to root context
+
+// end subcontext local-loader ------------------------------------
+
+if (game exits) {
+	crumbs.addContext ("game")
+}
+
+
+
+
+
+
+
+
+//crumbs.selectCommand ("set-locale")
 
 
 /*
-crumbs.setTranslations ("es", "/", "exit", ["salir", "fin"])
-
-crumbs.setCode ("/exit", "/exit")
-
 // loader context (host)
 crumbs.addContext ("/loader"),
 crumbs.setModuleDescription ("/loader", "This context allows to load a local or remote game as a host, or simply connect to a remote shared game and be an obsrver.")
@@ -36,9 +65,9 @@ crumbs.setModuleDescription ("/loader", "This context allows to load a local or 
 
 crumbs.addCommand ("/loader", "set context") // local, remote or observer
 crumbs.addCommand ("/loader", "set server") // att: server (only if context is remote or observer)
-crumbs.addCommand ("/loader", "set username") 
-crumbs.addCommand ("/loader", "set password") 
-crumbs.addCommand ("/loader", "connect") 
+crumbs.addCommand ("/loader", "set username")
+crumbs.addCommand ("/loader", "set password")
+crumbs.addCommand ("/loader", "connect")
 crumbs.addCommand ("/loader", "get games") // att: games (paths or gameIds)
 crumbs.addCommand ("/loader", "set gameId") // att: gameId (when context is remote or observer)
 crumbs.addCommand ("/loader", "set gamePath") // att: path to game files (when context is local or remote)
@@ -59,7 +88,7 @@ crumbs.addCommand ("/loader/game", "hostingRequest") // ask for being the new ho
 // file
 crumbs.setModuleDescription ("/loader/game/file", "Session actions")
 crumbs.addCommand ("/loader/game/file", "set target") // ...
-crumbs.addCommand ("/loader/game/file", "save") 
+crumbs.addCommand ("/loader/game/file", "save")
 
 // share a game
 crumbs.addContext ("/loader/game/broadcast")
@@ -93,7 +122,7 @@ op = crumbs.getChoice(menu)
 if (op == "/loader/exit") return
 
 if (op == "/loader/local") {
-	
+
 }
 
 

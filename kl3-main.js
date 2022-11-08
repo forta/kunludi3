@@ -1,59 +1,70 @@
-// testing kl3-crumbs module for kunludi3
+/*
+  Module: kl3-main
+  Description: it allows to load a game, share it and play it
 
-let localLoader = require ('./kl3-loader.js')
+*/
 
 //var crumbs = require ('kl3-crumbs') // the multilingual breadcrumbs
+delete require.cache[require.resolve('./modulos/kl3-crumbs/index.js')]
 let crumbs = require ('./modulos/kl3-crumbs/index.js')
 
-crumbs.addCommand ("exit")
-crumbs.setAliases ("exit", ["bye", "quit"])
-crumbs.addLocale ("es")
-crumbs.translateContext ("es", "root", "exit", ["salir", "fin"])
-
-crumbs.addCommand ("help")
-crumbs.addContext ("local-loader")
-crumbs.addContext ("game")
-
-// to-do: interactive interface
-
-// begin subcontext local-loader ------------------------------------
-
-
-let llcrumbs=localLoader.getCrumbs()
-
-// crumbs.setContext ("local-loader", llcrumbs)
-
-let coms
-
-localLoader.refreshCrumbs()
-coms = llcrumbs.getCommands () // crumbs to get choices but not to exec them (no filters in the example)
-localLoader.selectCommand ("set-rol", "host") // "set-rol" is supposed in coms array
-llcrumbs.showCommands () // dump
-
-localLoader.selectCommand ("set-datasource", "./data/games/")
-
-let gameList = localLoader.selectCommand ("get-gamelist")
-
-localLoader.selectCommand ("set-game", "0")
-
-let game = localLoader.selectCommand ("get-game")
-
-// crumbs.setContext ("..") // back to root context
-
-// end subcontext local-loader ------------------------------------
-
-if (game exits) {
-	crumbs.addContext ("game")
+// state
+let state = {
+	gameLoaded:false
 }
 
+module.exports = exports = {
+	// crumbs interface
+	getCrumbs:getCrumbs,
+  getCommands:getCommands,
+	execCom:execCom,
+	getState:getState,
+	setState:setState,
 
+	// other functions
 
+}
 
+// crumbs functions -------------------------------------------------
 
+function getCrumbs () {
+	return crumbs
+}
 
+function getCommands () {
+	// to-do: intrinsic commandsPtr
+  crumbs.addCommand ("set-context")
+	crumbs.addCommand ("set-locale")
+	crumbs.addCommand ("exit")
+	crumbs.setAliases ("exit", ["bye", "quit"])
+	crumbs.addLocale ("es")
+	crumbs.translateContext ("es", "root", "exit", ["salir", "fin"])
+	crumbs.addCommand ("help")
 
+	crumbs.addContext ("kl3-loader")
+	if (state.gameLoaded) {
+		crumbs.addContext ("kl3-game")
+	}
+	return crumbs.getCommands()
+}
 
-//crumbs.selectCommand ("set-locale")
+function execCom(com) {
+  if (crumbs.commandExists(com)) {
+    console.log ("Command " + com + " exits!")
+  } else {
+    console.log ("Command " + com + " not exits!")
+  }
+}
+
+function getState() {
+  return state
+}
+
+function setState(stateIn) {
+  state = stateIn
+}
+
+// Other functions -------------------------------------------------
 
 
 /*

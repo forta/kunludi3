@@ -6,23 +6,36 @@
       host/remote: return game data and modules from a URL
       guess/local: n.a.
       guess/remote: establish connection to a shared game, return token
+
+    Examples of use:
+      execCom ("set-rol", "host") // "set-rol" is supposed in coms array
+      execCom ("set-datasource", "./data/games/")
+      execCom ("get-gamelist")
+      execCom ("set-game", "0")
+      execCom ("get-game")
+
 */
 
 //var crumbs = require ('kl3-crumbs') // the multilingual breadcrumbs
+delete require.cache[require.resolve('./modulos/kl3-crumbs/index.js')]
 let crumbs = require ('./modulos/kl3-crumbs/index.js')
 
-let rol="host" // host or guess
-let ds // datasource: local or remote
-
-//let kl3-local-loader // module
-//let kl3-remote-loader // module
-//let kl3-remote-guess // module
-let game // game
+// state
+let state = {
+   rol:"host", // host or guess
+   ds:null, // datasource: local or remote
+   game:null // game
+}
 
 module.exports = exports = {
+	// crumbs interface
   getCrumbs:getCrumbs,
-  executeCommand:executeCommand,
-  refreshCrumbs:refreshCrumbs,
+  getCommands:getCommands,
+	execCom:execCom,
+	getState:getState,
+	setState:setState,
+
+  // other functions
   setRol:setRol, // host (local execution) or guess (remote execution)
   setDataSource:setDataSource, // directory or URL
   getGameList:getGameList,
@@ -31,11 +44,25 @@ module.exports = exports = {
   //dump:dump
 }
 
-function getCrumbs() {
-  return crumbs
+// crumbs functions -------------------------------------------------
+
+function getCrumbs () {
+	return crumbs
 }
 
-function executeCommand(com) {
+function getCommands () {
+
+  // ordinary commands
+  crumbs.addCommand ("set-rol")
+  crumbs.addCommand ("set-datasource")
+  crumbs.addCommand ("get-gamelist")
+  crumbs.addCommand ("set-game")
+  crumbs.addCommand ("get-game")
+
+  return crumbs.getCommands()
+}
+
+function execCom(com) {
   if (crumbs.commandExists(com)) {
     console.log ("Command " + com + " exits!")
   } else {
@@ -43,13 +70,15 @@ function executeCommand(com) {
   }
 }
 
-function refreshCrumbs() {
-  crumbs.addCommand ("set-rol")
-  crumbs.addCommand ("set-datasource")
-  crumbs.addCommand ("get-gamelist")
-  crumbs.addCommand ("set-game")
-  crumbs.addCommand ("get-game")
+function getState() {
+  return state
 }
+
+function setState(stateIn) {
+  state = stateIn
+}
+
+// Other functions -------------------------------------------------
 
 
 function setRol(rolIn) {

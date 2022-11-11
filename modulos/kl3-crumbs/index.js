@@ -10,12 +10,14 @@ module.exports = exports = { // commonjs
 	getModName:getModName,
 	addLocale:addLocale,
 	setLocale:setLocale,
+	cleanCommands:cleanCommands,
 	setContext:setContext,
 	addContext:addContext,
 	addCommand:addCommand,
 	setAliases:setAliases,
 	translateContext:translateContext,
-	commandExists:commandExists,
+	contextExists:contextExists,
+	commandResolution:commandResolution,
 	getCommands:getCommands,
 	showCommands:showCommands
 }
@@ -50,7 +52,7 @@ function addLocale(localeIn) {
 	showLog (4, "Adding locale " + wrapperSt(localeIn))
 	let index = arrayObjectIndexOf (locales, "id", localeIn)
 	if (index >= 0) {
-		showLog (3, "Locale "  + wrapperSt(localeIn) + " already added")
+		showLog (4, "Locale "  + wrapperSt(localeIn) + " already added")
 		return
 	}
 	locales.push ({id:localeIn, commands: [], contexts:[]})
@@ -69,6 +71,12 @@ function setLocale(localeIn) {
 	localeIndex = index
 	contextsPtr = locales[localeIndex].contexts
 	commandsPtr = locales[localeIndex].commands
+}
+
+function cleanCommands() {
+	showLog (4, "Commands and contexts cleaned up")
+	contextsPtr = locales[localeIndex].contexts = []
+	commandsPtr = locales[localeIndex].commands = []
 }
 
 function setContext(contextIn) {
@@ -95,14 +103,15 @@ function addContext(context) {
 	showLog (4, "Context " + wrapperSt(context) + " added with index " +  index)
 }
 
-function addCommand (com) {
+function addCommand (com, numPars) {
+	numPars = typeof numPars !== "undefined" ? numPars : 0
 	let index = arrayObjectIndexOf (commandsPtr, "id", com)
 	if (index >= 0) {
 		showLog (3, "Command " + wrapperSt(com) + " already added in context")
 		return
 	}
 	showLog (4, "Command " + wrapperSt(com) + " added in context")
-	commandsPtr.push ({id:com, aliases:[]})
+	commandsPtr.push ({id:com, numPars:numPars, aliases:[]})
 }
 
 function setAliases (com, aliases) {
@@ -128,12 +137,38 @@ function translateContext (target, context, com, aliases) {
 
 }
 
-function commandExists (com) {
-	let index = arrayObjectIndexOf (commandsPtr, "id", com)
+function contextExists (context) {
+		if (arrayObjectIndexOf (contextsPtr, "id", context) < 0) return false
+		return true
+
+}
+
+function commandResolution (com) {
+	let index = arrayObjectIndexOf (commandsPtr, "id", com[0])
 	if (index < 0) {
-		return false
+		for(let i = 0, len = commandsPtr.length; i < len; i++) {
+				for(let j = 0, len2 = commandsPtr[i].aliases.length; j < len2; j++) {
+					if (commandsPtr[i].aliases[j].id === com[0]) {
+						index = i
+						com[0]= commandsPtr[i].id
+						break
+					}
+				}
+				if (index>=0) break
+		}
 	}
-	return true
+
+	if (index < 0) {
+		showLog (4, "Wrong command " + com[0])
+		return []
+	}
+
+	if (commandsPtr[index].numPars != com.length - 1) {
+		showLog (3, "The number of parameters was " + (com.length-1) + " but it should be " + commandsPtr[index].numPars)
+		return []
+	}
+
+	return com
 }
 
 function getCommands () {
@@ -141,16 +176,12 @@ function getCommands () {
 	for (let c in commandsPtr) {
 		coms.push (commandsPtr[c])
 	}
-
-	// to-do: by now
-	showCommands()
-
 	return coms
 }
 
 function showCommands (context) {
 	console.log ("Module name: " + modName)
-	console.log ("Commands:")
+	console.log ("Available commands:")
 	for (let c in commandsPtr) {
 		let aliasesStr = ""
 		if (commandsPtr[c].aliases.length > 0) {
@@ -160,13 +191,14 @@ function showCommands (context) {
 			}
 			aliasesStr += ")"
 		}
-		console.log ("\t" + c + "> " + commandsPtr[c].id + aliasesStr)
+		let numParsStr = (commandsPtr[c].numPars >0)? " (num pars: " + commandsPtr[c].numPars + ")": ""
+		console.log ("\t" + c + "> " + commandsPtr[c].id + numParsStr + aliasesStr)
 	}
-	console.log ("Subcontexts:")
+	console.log ("Available subcontexts:")
 	for (let c in contextsPtr) {
 		console.log ("\t" + c + "> " + contextsPtr[c].id)
 	}
-	console.log ("Locales:")
+	console.log ("Available languages:")
 	for (let loc in locales) {
 		console.log ("\t" + loc + "> " + locales[loc].id + ((localeIndex==loc)?"*":""))
 	}
@@ -177,9 +209,4 @@ function showCommands (context) {
 (function() {
 	addLocale ("en")
 	setLocale ("en")
-	// intrinsic commands
-	//"set-context"
-	//"set-locale"
-	//"help"
-	//"quit"
 })();

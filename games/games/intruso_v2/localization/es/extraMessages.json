@@ -1,0 +1,19 @@
+{	"items.móvil.articulo": { "message": "el" },
+  "items.cuadro1.articulo": { "message": "el" },
+  "items.chimenea.articulo": { "message": "la" },
+  "items.espejo.articulo": { "message": "el" },
+  "items.nevera.articulo": { "message": "la" },
+  "items.botella.articulo": { "message": "la" },
+  "items.botella-vacía.articulo": { "message": "la" },
+  "items.taper.articulo": { "message": "el" },
+  "items.dinamita.articulo": { "message": "la" },
+  "items.queso.articulo": { "message": "el" },
+  "items.póster.articulo": { "message": "el" },
+  "items.ratón.articulo": { "message": "el" },
+  "items.gato.articulo": { "message": "el" },
+  "items.jaula.articulo": { "message": "la" },
+  "items.huesos.articulo": { "message": "los" },
+  "items.cuadro2.articulo": { "message": "el" },
+  "items.ataúd.articulo": { "message": "el" }
+
+}

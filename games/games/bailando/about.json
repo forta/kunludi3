@@ -1,0 +1,18 @@
+{
+	"ludi_id": "9",
+	"name": "bailando",
+	"lib": "v0.02",
+	"translation": [
+		{
+			"language": "es",
+			"title": "Bailando",
+			"desc": "Juego participante en libro de rayuela 2022",
+			"introduction": "Cambiaron tu historia, pero tienes ahora la oportunidad de contarla tal cual fue.",
+			"author": {
+				"name": "fortas",
+				"ludi_account": "fortas",
+				"email": "ludi.ludon@gmail.com"
+			}
+		}
+	]
+}

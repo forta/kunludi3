@@ -1,19 +1,5 @@
 /*
   Module: kl3-loader
-  Description:
-    In case of:
-      host/local: return game data and modules from a directory
-      host/remote: return game data and modules from a URL
-      guess/local: n.a.
-      guess/remote: establish connection to a shared game, return token
-
-    Examples of use:
-      execCom ("set-rol", "host") // "set-rol" is supposed in coms array
-      execCom ("set-datasource", "./data/games/")
-      execCom ("get-gamelist")
-      execCom ("set-game", "0")
-      execCom ("get-game")
-
 */
 
 //var crumbs = require ('kl3-crumbs') // the multilingual breadcrumbs
@@ -22,18 +8,18 @@ let crumbs = require ('./modulos/kl3-crumbs/index.js')
 
 // state
 let state = {
-   rol:"host", // host or guess
-   ds:null, // datasource: local or remote
+   rol:"host", // host or guest
+   ds:"./games", // datasource: directory or URL
+   gamelist:[],
    game:null // game
 }
 
 module.exports = exports = {
 	// crumbs interface
   getCrumbs:getCrumbs,
-  getCommands:getCommands,
-	execCom:execCom,
 	getState:getState,
 	setState:setState,
+  execCommand:execCommand,
 
   // other functions
   setRol:setRol, // host (local execution) or guess (remote execution)
@@ -50,32 +36,67 @@ function getCrumbs () {
 	return crumbs
 }
 
-function getCommands () {
-
-  // ordinary commands
-  crumbs.addCommand ("set-rol")
-  crumbs.addCommand ("set-datasource")
-  crumbs.addCommand ("get-gamelist")
-  crumbs.addCommand ("set-game")
-  crumbs.addCommand ("get-game")
-
-  return crumbs.getCommands()
-}
-
-function execCom(com) {
-  if (crumbs.commandExists(com)) {
-    console.log ("Command " + com + " exits!")
-  } else {
-    console.log ("Command " + com + " not exits!")
-  }
-}
-
 function getState() {
   return state
 }
 
 function setState(stateIn) {
   state = stateIn
+}
+
+function execCommand(com) {
+  console.log ("Executing [" + com + "] on module " + crumbs.getModName())
+
+  if (com[0] == "set-rol") {
+    if ((com[1] == "?") || ((com[1] != "host") && (com[1] != "guest"))) {
+      console.log ("Rol must be on of these:")
+      console.log ("\thost: to run a loaded game")
+      console.log ("\tguest: to connect to a remote running game")
+      console.log ("state.rol is " + state.rol)
+      return
+    }
+
+    state.rol = com[1]
+
+    // defaults
+    if (com[1] == "host") state.ds = "./games"
+    if (com[1] == "guest") state.ds = "http://localhost:8080"
+
+    console.log ("state.rol set to " + state.rol)
+    console.log ("state.ds set to " + state.ds)
+
+  } else if (com[0] == "set-datasource") {
+    if (com[1] == "?") {
+      if (state.rol == "host") {
+        console.log ("The datasource can be a local directory or an URL")
+      } else {
+        console.log ("An URL to an orchestrator server")
+      }
+      console.log ("state.ds is " + state.ds)
+      return
+    }
+
+    state.ds = com[1]
+    console.log ("state.ds set to " + com[1])
+
+  } else if (com[0] == "get-gamelist") {
+    if (com[1] == "?") {
+      if (state.rol == "host") {
+        console.log ("to-do: try to get " + state.ds + "games.json")
+      } else {
+        console.log ("to-do: try to get " + state.ds + "games.json")
+      }
+      return
+    }
+
+    // demo
+    state.gamelist = ["game1" , "game2"]
+    console.log ("state.gamelist set to " + state.gamelist)
+
+  } else {
+    console.log ("No reaction")
+  }
+
 }
 
 // Other functions -------------------------------------------------

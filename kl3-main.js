@@ -16,10 +16,9 @@ let state = {
 module.exports = exports = {
 	// crumbs interface
 	getCrumbs:getCrumbs,
-  getCommands:getCommands,
-	execCom:execCom,
 	getState:getState,
 	setState:setState,
+	execCommand:execCommand,
 
 	// other functions
 
@@ -31,31 +30,6 @@ function getCrumbs () {
 	return crumbs
 }
 
-function getCommands () {
-	// to-do: intrinsic commandsPtr
-  crumbs.addCommand ("set-context")
-	crumbs.addCommand ("set-locale")
-	crumbs.addCommand ("exit")
-	crumbs.setAliases ("exit", ["bye", "quit"])
-	crumbs.addLocale ("es")
-	crumbs.translateContext ("es", "root", "exit", ["salir", "fin"])
-	crumbs.addCommand ("help")
-
-	crumbs.addContext ("kl3-loader")
-	if (state.gameLoaded) {
-		crumbs.addContext ("kl3-game")
-	}
-	return crumbs.getCommands()
-}
-
-function execCom(com) {
-  if (crumbs.commandExists(com)) {
-    console.log ("Command " + com + " exits!")
-  } else {
-    console.log ("Command " + com + " not exits!")
-  }
-}
-
 function getState() {
   return state
 }
@@ -63,6 +37,11 @@ function getState() {
 function setState(stateIn) {
   state = stateIn
 }
+
+function execCommand(com) {
+	console.log ("Executing [" + com + "] on module " + crumbs.getModName())
+}
+
 
 // Other functions -------------------------------------------------
 

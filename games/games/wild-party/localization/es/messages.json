@@ -1,0 +1,16 @@
+﻿{
+    "items.anita.desc": {
+        "message": "La protagonista de esta historia"
+    },
+    "items.anita.txt": {
+        "message": "Anita"
+    },
+	"items.habitación.txt": {
+        "message": "en la habitación"
+    },
+	"items.habitación2.txt": {
+        "message": "en la fiesta salvaje"
+    }
+   
+}
+

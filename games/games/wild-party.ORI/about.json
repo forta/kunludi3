@@ -1,0 +1,18 @@
+{
+	"ludi_id": "7",
+	"name": "wild-party",
+	"translation": [
+		{
+			"language": "es",
+			"title": "Fiesta salvaje",
+			"desc": "Juego en desarrollo, pensado para la ectocomp 2019",
+			"introduction": "Anita, te han invitado a una fiesta de algo standing organizada por unos ricachones rusos amigos de tu novio. Todo empieza muy glamurosamente pero después de la cena los invitados comienzan a comportarse un tanto agresivamente.",
+			"author": {
+				"name": "Paco Orta",
+				"ludi_account": "forta",
+				"email": "ludi.ludos@gmail.com"
+			}
+		}
+
+	]
+}

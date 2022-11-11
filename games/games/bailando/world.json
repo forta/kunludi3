@@ -1,0 +1,24 @@
+{
+  "items": [
+    {  "id": "prota", "type": "pc", "loc": "intro0" },
+    { "id": "limbo",  "type": "loc" },
+    { "id": "intro0", "type": "loc"  },
+    { "id": "intro1",  "type": "loc" }
+  ],
+  "attributes": [
+    {
+      "id": "plantilla",
+      "properties": [
+        { "id": "valiente", "value": "0", "use": "mandatory"   }
+      ]
+    }
+  ],
+  "actions": [],
+  "directions": [],
+  "attExceptions": [
+    {
+      "id": "isTakeAble",
+      "exceptionList": []
+    }
+  ]
+}

@@ -1,0 +1,191 @@
+{
+  "items": [
+    {
+      "id": "prota",
+      "type": "pc",
+      "loc": "hall"
+    },
+    {
+      "id": "limbo",
+      "type": "loc"
+    },
+    {
+      "id": "intro1",
+      "type": "loc",
+      "address": [ { "dir": "in", "target": "intro2" } ]
+    },
+    {
+      "id": "intro2",
+      "type": "loc",
+      "address": [ { "dir": "in", "target": "porche" } ]
+    },
+    {
+      "id": "porche",
+      "type": "loc",
+      "address": [ { "dir": "in", "target": "hall" } ]
+    },
+    {
+      "id": "hall",
+      "type": "loc",
+      "address": [
+        { "dir": "up", "target": "pasillo" },
+        { "dir": "d270", "target": "cocina" },
+        { "dir": "out", "target": "porche" }
+      ]
+    },
+    {
+      "id": "cocina",
+      "type": "loc",
+      "address": [ { "dir": "out", "target": "hall" } ]
+    },
+    {
+      "id": "pasillo",
+      "type": "loc",
+      "address": [
+        { "dir": "d0", "target": "hab-padres" },
+        { "dir": "d270", "target": "hab-hijos" },
+        { "dir": "d90", "target": "hab-abuelos" },
+        { "dir": "down", "target": "hall" }
+      ]
+    },
+    {
+      "id": "hab-padres",
+      "type": "loc",
+      "address": [ { "dir": "out", "target": "pasillo" } ]
+    },
+    {
+      "id": "hab-hijos",
+      "type": "loc",
+      "address": [ { "dir": "out", "target": "pasillo" } ]
+    },
+    {
+      "id": "hab-abuelos",
+      "type": "loc",
+      "address": [ { "dir": "out", "target": "pasillo" } ]
+    },
+    {
+      "id": "móvil",
+      "type": "obj",
+      "loc": "limbo"
+    },
+    {
+      "id": "cuadro1",
+      "type": "obj",
+      "loc": "pasillo",
+      "att": {
+        "familiaState": [ { "padre": "0" }, { "madre": "0" }, { "chica": "0" }, { "niño": "0" }, { "abuelo": "0" }, { "abuela": "0" } ]
+      },
+      "att2": ["familiaState"]
+    },
+    {
+      "id": "chimenea",
+      "type": "obj",
+      "loc": "hall"
+    },
+    {
+      "id": "espejo",
+      "type": "obj",
+      "loc": "hab-padres"
+    },
+    {
+      "id": "nevera",
+      "type": "obj",
+      "loc": "cocina",
+      "att": { "isContainer": [] }
+    },
+    {
+      "id": "botella",
+      "type": "obj",
+      "loc": "limbo"
+    },
+    {
+      "id": "botella-vacía",
+      "type": "obj",
+      "loc": "limbo"
+    },
+    {
+      "id": "taper",
+      "type": "obj",
+      "loc": "limbo"
+    },
+    {
+      "id": "dinamita",
+      "type": "obj",
+      "loc": "limbo"
+    },
+    {
+      "id": "queso",
+      "type": "obj",
+      "loc": "limbo"
+    },
+    {
+      "id": "póster",
+      "type": "obj",
+      "loc": "pasillo"
+    }
+    ,
+    {
+      "id": "ratón",
+      "type": "obj",
+      "loc": "hab-hijos"
+    }
+    ,
+    {
+      "id": "gato",
+      "type": "obj",
+      "loc": "hab-hijos"
+    }
+    ,
+    {
+      "id": "jaula",
+      "type": "obj",
+      "loc": "limbo"
+    }
+    ,
+    {
+      "id": "huesos",
+      "type": "obj",
+      "loc": "limbo"
+    }
+    ,
+    {
+      "id": "cuadro2",
+      "type": "obj",
+      "loc": "hab-abuelos"
+    }
+    ,
+    {
+      "id": "ataúd",
+      "type": "obj",
+      "loc": "hab-abuelos"
+    },
+    {
+      "id": "interruptores",
+      "type": "obj",
+      "loc": "limbo"
+    }
+  ],
+  "attributes": [
+    {
+      "id": "familiaState",
+      "properties": [
+        { "id": "padre", "value": "0", "use": "mandatory"   },
+        { "id": "madre", "value": "0", "use": "mandatory"   },
+        { "id": "chica", "value": "0", "use": "mandatory"   },
+        { "id": "niño", "value": "0", "use": "mandatory"   },
+        { "id": "abuelo", "value": "0", "use": "mandatory" },
+        { "id": "abuela", "value": "0", "use": "mandatory"   }
+      ]
+    }
+  ],
+  "actions": [
+		{ "id":"sacar_foto", "numpar":"1", "on":["obj"] }
+	],
+  "directions": [],
+  "attExceptions": [
+    {
+      "id": "isTakeAble",
+      "exceptionList": ["cuadro1", "chimenea", "espejo", "nevera", "póster", "ratón", "gato", "jaula", "huesos", "cuadro2", "ataúd"]
+    }
+  ]
+}

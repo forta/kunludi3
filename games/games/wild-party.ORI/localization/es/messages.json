@@ -1,0 +1,120 @@
+﻿{
+    "actions.examine_darkness.txt": {
+        "message": "examinar a tientas"
+    },
+    "items.anita.desc": {
+        "message": "La protagonista de esta historia"
+    },
+    "items.anita.txt": {
+        "message": "Anita"
+    },
+	"items.sala_baile.txt": {
+        "message": "la sala de baile"
+    },
+	"items.hall.txt": {
+        "message": "hall"
+    },
+	"items.pasillo_superior.txt": {
+        "message": "pasillo superior"
+    },
+	"items.laboratorio.txt": {
+        "message": "laboratorio"
+    },
+	"items.despacho.txt": {
+        "message": "despacho"
+    },
+	"items.consigna_seguridad.txt": {
+        "message": "consigna_seguridad"
+    },
+	"items.comedor.txt": {
+        "message": "comedor"
+    },
+	"items.exterior_mansión.txt": {
+        "message": "exterior_mansión"
+    },
+    "items.libro.txt": {
+        "message": "libro"
+    },
+    "items.libro.desc": {
+        "message": "Libro bla, bla"
+    },
+    "items.chica.txt": {
+        "message": "chica"
+    },
+    "items.chica.desc": {
+        "message": "chica desc"
+    },
+    "items.químico.txt": {
+        "message": "bello rabioso durmiente"
+    },
+    "items.químico.desc": {
+        "message": "Para estar disfrazado de investigador loco con esa bata blanca, parece que no se ha esforzado mucho en caracterizarse para la fiesta, sino que casi da el pego de ser un científicoloco de verdad"
+    },
+    "móvil_1.txt": {
+        "message": "móvil Samsung"
+    },
+    "items.libro.desc": {
+        "message": "móvil Samsung de última generación"
+    },
+    "móvil_1.txt": {
+        "message": "iphone"
+    },
+    "items.libro.desc": {
+        "message": "iphone 6"
+    },
+    "items.libro.txt": {
+        "message": "libro"
+    },
+    "items.libro.desc": {
+        "message": "Libro bla, bla"
+    },
+    "items.carta.txt": {
+        "message": "carta"
+    },
+    "items.carta.desc": {
+        "message": "carta bla, bla"
+    },
+    "items.frasco.txt": {
+        "message": "frasco"
+    },
+    "items.frasco.desc": {
+        "message": "frasco(dyn)"
+    },
+    "items.pastilla_1.txt": {
+        "message": "pastilla verde"
+    },
+    "items.pastilla_1.desc": {
+        "message": "pastilla verde"
+    },
+    "items.pastilla_2.txt": {
+        "message": "pastilla roja"
+    },
+    "items.pastilla_2.desc": {
+        "message": "pastilla roja"
+    },
+    "items.cuadro_eléctrico.txt": {
+        "message": "cuadro eléctrico"
+    },
+    "items.cuadro_eléctrico.desc": {
+        "message": "Es cuadro eléctrico con una palanca para dar luz a la mansión. El guarda de seguridad debió bajarla cuando vi el desastre que se avecinaba."
+    },
+    "items.ratón.txt": {
+        "message": "ratón enjaulado"
+    },
+    "items.ratón.desc": {
+        "message": "ratón enjaulado apacible/nervioso/frenético/muerto(dyn)"
+    },
+    "items.atizador.txt": {
+        "message": "atizador"
+    },
+    "items.atizador.desc": {
+        "message": "Un atizador pringoso de sangre"
+    },
+    "items.armario.txt": {
+        "message": "armario"
+    },
+    "items.armario.desc": {
+        "message": "El armario es muy robusto"
+    }
+    
+}

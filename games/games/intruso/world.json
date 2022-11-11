@@ -1,0 +1,224 @@
+{
+  "items": [
+    {
+      "id": "prota",
+      "type": "pc",
+      "loc": "hall",
+      "att": { "generalState": [ { "state": "0" } ] }
+    },
+    {
+      "id": "limbo",
+      "type": "loc"
+    },
+    {
+      "id": "intro1",
+      "type": "loc",
+      "address": [ { "dir": "in", "target": "intro2" } ],
+      "att": { "generalState": [ { "state": "0" } ] }
+    },
+    {
+      "id": "intro2",
+      "type": "loc",
+      "address": [ { "dir": "in", "target": "porche" } ],
+      "att": { "generalState": [ { "state": "0" } ] }
+    },
+    {
+      "id": "porche",
+      "type": "loc",
+      "address": [ { "dir": "in", "target": "hall" } ],
+      "att": { "generalState": [ { "state": "0" } ] }
+    },
+    {
+      "id": "hall",
+      "type": "loc",
+      "address": [
+        { "dir": "up", "target": "pasillo" },
+        { "dir": "d270", "target": "cocina" },
+        { "dir": "out", "target": "porche" }
+      ],
+      "att": { "generalState": [ { "state": "0" } ] }
+    },
+    {
+      "id": "cocina",
+      "type": "loc",
+      "address": [ { "dir": "out", "target": "hall" } ],
+      "att": { "generalState": [ { "state": "0" } ] }
+    },
+    {
+      "id": "pasillo",
+      "type": "loc",
+      "address": [
+        { "dir": "d0", "target": "hab-padres" },
+        { "dir": "d270", "target": "hab-hijos" },
+        { "dir": "d90", "target": "hab-abuelos" },
+        { "dir": "down", "target": "hall" }
+      ],
+      "att": { "generalState": [ { "state": "0" } ] }
+    },
+    {
+      "id": "hab-padres",
+      "type": "loc",
+      "address": [ { "dir": "out", "target": "pasillo" } ],
+      "att": { "generalState": [ { "state": "0" } ] }
+    },
+    {
+      "id": "hab-hijos",
+      "type": "loc",
+      "address": [ { "dir": "out", "target": "pasillo" } ],
+      "att": { "generalState": [ { "state": "0" } ] }
+    },
+    {
+      "id": "hab-abuelos",
+      "type": "loc",
+      "address": [ { "dir": "out", "target": "pasillo" } ],
+      "att": { "generalState": [ { "state": "0" } ] }
+    },
+    {
+      "id": "móvil",
+      "type": "obj",
+      "loc": "limbo",
+      "att": { "generalState": [ { "state": "0" } ] }
+    },
+    {
+      "id": "cuadro1",
+      "type": "obj",
+      "loc": "pasillo",
+      "att": {
+        "generalState": [ { "state": "0" } ] ,
+        "familiaState": [ { "padre": "0" }, { "madre": "0" }, { "chica": "0" }, { "niño": "0" }, { "abuelo": "0" }, { "abuela": "0" } ]
+       }
+    },
+    {
+      "id": "chimenea",
+      "type": "obj",
+      "loc": "hall",
+      "att": { "generalState": [ { "state": "0" } ] }
+    },
+    {
+      "id": "espejo",
+      "type": "obj",
+      "loc": "hab-padres",
+      "att": { "generalState": [ { "state": "0" } ] }
+    },
+    {
+      "id": "nevera",
+      "type": "obj",
+      "loc": "cocina",
+      "att": { "generalState": [ { "state": "0" } ],
+               "isContainer": []
+             }
+    },
+    {
+      "id": "botella",
+      "type": "obj",
+      "loc": "limbo",
+      "att": { "generalState": [ { "state": "0" } ] }
+    },
+    {
+      "id": "botella-vacía",
+      "type": "obj",
+      "loc": "limbo",
+      "att": { "generalState": [ { "state": "0" } ] }
+    },
+    {
+      "id": "taper",
+      "type": "obj",
+      "loc": "limbo",
+      "att": { "generalState": [ { "state": "0" } ] }
+    },
+    {
+      "id": "dinamita",
+      "type": "obj",
+      "loc": "limbo",
+      "att": { "generalState": [ { "state": "0" } ] }
+    },
+    {
+      "id": "queso",
+      "type": "obj",
+      "loc": "limbo",
+      "att": { "generalState": [ { "state": "0" } ] }
+    },
+    {
+      "id": "póster",
+      "type": "obj",
+      "loc": "pasillo",
+      "att": { "generalState": [ { "state": "0" } ] }
+    }
+    ,
+    {
+      "id": "ratón",
+      "type": "obj",
+      "loc": "hab-hijos",
+      "att": { "generalState": [ { "state": "0" } ] }
+    }
+    ,
+    {
+      "id": "gato",
+      "type": "obj",
+      "loc": "hab-hijos",
+      "att": { "generalState": [ { "state": "0" } ] }
+    }
+    ,
+    {
+      "id": "jaula",
+      "type": "obj",
+      "loc": "limbo",
+      "att": { "generalState": [ { "state": "0" } ] }
+    }
+    ,
+    {
+      "id": "huesos",
+      "type": "obj",
+      "loc": "limbo",
+      "att": { "generalState": [ { "state": "0" } ] }
+    }
+    ,
+    {
+      "id": "cuadro2",
+      "type": "obj",
+      "loc": "hab-abuelos",
+      "att": { "generalState": [ { "state": "0" } ] }
+    }
+    ,
+    {
+      "id": "ataúd",
+      "type": "obj",
+      "loc": "hab-abuelos",
+      "att": { "generalState": [ { "state": "0" } ] }
+    },
+    {
+      "id": "interruptores",
+      "type": "obj",
+      "loc": "limbo",
+      "att": { "generalState": [ { "state": "0" } ] }
+    }
+  ],
+  "attributes": [
+    {
+      "id": "generalState",
+      "properties": [
+        { "id": "state", "value": "0", "use": "mandatory"   }
+      ]
+    }, {
+      "id": "familiaState",
+      "properties": [
+        { "id": "padre", "value": "0", "use": "mandatory"   },
+        { "id": "madre", "value": "0", "use": "mandatory"   },
+        { "id": "chica", "value": "0", "use": "mandatory"   },
+        { "id": "niño", "value": "0", "use": "mandatory"   },
+        { "id": "abuelo", "value": "0", "use": "mandatory" },
+        { "id": "abuela", "value": "0", "use": "mandatory"   }
+      ]
+    }
+  ],
+  "actions": [
+		{ "id":"sacar_foto", "numpar":"1", "on":["obj"] }
+	],
+  "directions": [],
+  "attExceptions": [
+    {
+      "id": "isTakeAble",
+      "exceptionList": ["cuadro1", "chimenea", "espejo", "nevera", "póster", "ratón", "gato", "jaula", "huesos", "cuadro2", "ataúd"]
+    }
+  ]
+}

@@ -1,0 +1,406 @@
+{
+    "items": [
+        {
+            "id": "escritor",
+            "type": "pc",
+            "loc": "estudio",
+            "att": {
+ 				"generalState": [ {"state":"0"}	]
+            }
+        },
+        {
+            "id": "limbo",
+            "type": "loc"
+        },
+        {
+			"id": "estudio",
+            "type": "loc",
+			"address":[  
+				{  "dir":"out", 	"target":"salón_comedor"	}
+			],
+            "att": {
+ 				"generalState": [ {"state":"0"}	]
+            }
+        },
+        {
+			"id": "salón_comedor",
+            "type": "loc",
+			"address":[  
+				{   "dir":"out", "target":"camino_residencial"  },
+				{   "dir":"up", "target":"pasillo"  },
+				{   "dir":"d0", "target":"cocina"  }
+			],
+            "att": {
+ 				"generalState": [ {"state":"0"}	]
+            }
+        },
+        {
+			"id": "cocina",
+            "type": "loc",
+			"address":[  
+				{   "dir":"d180", "target":"salón_comedor"  },
+				{   "dir":"d0", "target":"camino_playa"  }
+
+			],
+            "att": {
+ 				"generalState": [ {"state":"0"}	]
+            }
+        },
+        {
+			"id": "pasillo",
+            "type": "loc",
+			"address":[  
+				{   "dir":"down", "target":"salón_comedor"  },
+				{   "dir":"d90", "target":"habitación_gemelos"  },
+				{   "dir":"d270", "target":"habitación_madre"  }
+
+			]
+        },
+        {
+			"id": "camino_playa",
+            "type": "loc",
+			"address":[  
+				{   "dir":"d180", "target":"cocina"  },
+				{   "dir":"up", "target":"promontorio"  },
+				{   "dir":"d90", "target":"caleta"  }
+			],
+            "att": {
+ 				"generalState": [ {"state":"0"}	]
+            }
+        },
+        {
+			"id": "caleta",
+            "type": "loc",
+			"address":[  
+				{   "dir":"d270", "target":"camino_playa"  },
+				{   "dir":"in", "target":"cuevita"  }
+			],
+            "att": {
+ 				"generalState": [ {"state":"0"}	]
+            }
+        },
+        {
+			"id": "cuevita",
+            "type": "loc",
+			"address":[  
+				{   "dir":"out", "target":"caleta"  }
+			],
+            "att": {
+ 				"generalState": [ {"state":"0"}	]
+            }
+        },
+        {
+			"id": "promontorio",
+            "type": "loc",
+			"address":[  
+				{   "dir":"down", "target":"camino_playa"  }
+			]
+        },
+        {
+			"id": "habitación_madre",
+            "type": "loc",
+			"address":[  
+				{   "dir":"d90", "target":"pasillo"  }
+			]
+        },
+        {
+			"id": "habitación_gemelos",
+            "type": "loc",
+			"address":[  
+				{   "dir":"d270", "target":"pasillo"  }
+			]
+        },
+        {
+			"id": "camino_residencial",
+            "type": "loc",
+			"address":[  
+				{   "dir":"in", "target":"salón_comedor"  },
+				{   "dir":"d90", "target":"portal_hippie"  },
+				{   "dir":"d270", "target":"portal_embarazada"  }
+			]
+        },
+        {
+			"id": "portal_embarazada",
+            "type": "loc",
+			"address":[  
+				{   "dir":"d90", "target":"camino_residencial"  }
+			]
+        },
+        {
+			"id": "portal_hippie",
+            "type": "loc",
+			"address":[  
+				{   "dir":"d270", "target":"camino_residencial"  }
+			]
+        },
+        {
+			"id": "embarazada",
+            "type": "npc",
+            "loc": "limbo",
+            "att": {
+ 				"generalState": [ {"state":"0"}	]
+            }
+        },
+        {
+			"id": "hippie",
+            "type": "npc",
+            "loc": "limbo",
+            "att": {
+ 				"generalState": [ {"state":"0"}	]
+            }
+        },
+        {
+			"id": "maleta",
+            "type": "obj",
+            "loc": "escritor",
+            "att": {
+ 				"isContainer": []				
+            }
+        },
+		{
+			"id": "estantería",
+            "type": "obj",
+            "loc": "estudio",
+            "att": {
+ 				"isContainer": []				
+            }
+        },
+		{
+			"id": "libro_magia",
+            "type": "obj",
+            "loc": "estantería",
+            "att": {
+ 				"generalState": [ {"state":"0"}	]
+            }
+        },
+		{
+			"id": "manuscrito",
+            "type": "obj",
+            "loc": "maleta",
+            "att": {
+ 				"generalState": [ {"state":"360"}	]
+            }
+        },
+		{
+			"id": "tijeras",
+            "type": "obj",
+            "loc": "cocina"
+        },
+		{
+			"id": "setas",
+            "type": "obj",
+            "loc": "limbo"
+        },
+		{
+			"id": "servilleta",
+            "type": "obj",
+            "loc": "limbo"
+        },
+		{
+			"id": "cerillas",
+            "type": "obj",
+            "loc": "cocina"
+        },
+		{
+			"id": "collar",
+            "type": "obj",
+            "loc": "limbo"
+        },
+		{
+			"id": "móvil",
+            "type": "obj",
+            "loc": "escritor",
+			"att": {
+				"apps": [ {"llamada":""}, {"app_reloj":"450"}, {"app_linterna":"0"}, {"app_mareas":"1260"}, {"app_pilas":"1440"}	]		
+            }
+        },
+		{
+			"id": "cargador",
+            "type": "obj",
+            "loc": "estantería",
+            "att": {
+ 				"generalState": [ {"state":"0"}	]
+            }
+        },
+		{
+			"id": "foto2",
+            "type": "obj",
+            "loc": "estantería"
+        },
+		{
+			"id": "barrotes",
+            "type": "obj",
+            "loc": "caleta",
+            "att": {
+ 				"generalState": [ {"state":"0"}	]
+            }
+        },
+		{
+			"id": "cuerda_enterrada",
+            "type": "obj",
+            "loc": "cuevita"
+        },
+		{
+			"id": "planta",
+            "type": "obj",
+            "loc": "estudio"
+        },
+		{
+			"id": "chimenea",
+            "type": "obj",
+            "loc": "salón_comedor",
+            "att": {
+ 				"isContainer": []				
+            }
+        },
+		{
+			"id": "atizador",
+            "type": "obj",
+            "loc": "chimenea"
+        },
+		{
+			"id": "panfleto",
+            "type": "obj",
+            "loc": "salón_comedor",
+            "att": {
+ 				"generalState": [ {"state":"0"}	]
+            }
+        },
+		{
+			"id": "timbre_embarazada",
+            "type": "obj",
+            "loc": "portal_embarazada",
+            "att": {
+ 				"generalState": [ {"state":"0"}	]
+            }
+        },
+		{
+			"id": "timbre_hippie",
+            "type": "obj",
+            "loc": "portal_hippie",
+            "att": {
+ 				"generalState": [ {"state":"0"}	]
+            }
+        },
+		{
+			"id": "lápida1",
+            "type": "obj",
+            "loc": "promontorio"
+        },
+		{
+			"id": "lápida2",
+            "type": "obj",
+            "loc": "promontorio"
+        },
+		{
+			"id": "cama",
+            "type": "obj",
+            "loc": "habitación_madre"
+        },
+		{
+			"id": "diario",
+            "type": "obj",
+            "loc": "limbo"
+        },
+		{
+			"id": "foto3",
+            "type": "obj",
+            "loc": "limbo"
+        },
+		{
+			"id": "espejo",
+            "type": "obj",
+            "loc": "habitación_madre"
+        },
+		{
+			"id": "escritorio",
+            "type": "obj",
+            "loc": "habitación_gemelos"
+        },
+		{
+			"id": "armario_madre",
+            "type": "obj",
+            "loc": "habitación_madre",
+            "att": {
+ 				"isContainer": []				
+            }
+        },
+		{
+			"id": "cinturón",
+            "type": "obj",
+            "loc": "armario_madre",
+            "att": {
+ 				"generalState": [ {"state":"0"}	]
+            }
+        },
+		{
+			"id": "cestaFreddie",
+            "type": "obj",
+            "loc": "limbo",
+            "att": {
+ 				"generalState": [ {"state":"[]"}	]
+            }
+        },
+		{
+			"id": "cestaTelePapeo",
+            "type": "obj",
+            "loc": "limbo",
+            "att": {
+ 				"generalState": [ {"state":"[]"}	]
+            }
+        }	
+    ],
+	"attributes":[  
+ 	  {  
+         "id":"generalState",
+		 "properties": [
+                { "id": "state", "value": "0", "use":"mandatory" }
+          ]		 
+      }
+   ],
+	"actions": [
+		{  
+         "id":"móvil_llamar",
+         "numpar":"1",
+         "on":["obj"]
+       },
+		{  
+         "id":"móvil_estado",
+         "numpar":"1",
+         "on":["obj"]
+       },
+		{  
+         "id":"encender_linterna",
+         "numpar":"1",
+         "on":["obj"]
+       },
+		{  
+         "id":"apagar_linterna",
+         "numpar":"1",
+         "on":["obj"]
+       },
+		{  
+         "id":"cargar",
+         "numpar":"1",
+         "on":["obj"]
+       },
+		{  
+         "id":"desconectar",
+         "numpar":"1",
+         "on":["obj"]
+       },
+		{  
+         "id":"write",
+         "numpar":"1",
+         "on":["obj"]
+       }   
+	   
+	],
+	"directions": [	],
+	"attExceptions":[
+	  {  
+         "id":"isTakeAble",
+         "exceptionList": ["timbre_embarazada", "timbre_hippie", "barrotes", "chimenea", "estantería", "lápida1", "lápida2", "cama", "espejo", "escritorio", "armario_madre"]
+	  } 	  
+   ]   
+}

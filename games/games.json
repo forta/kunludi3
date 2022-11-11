@@ -1,0 +1,60 @@
+{
+	"games": [
+		{
+			"name": "tresfuentes",
+			"type": "0",
+			"group": "0"
+		},
+		{
+			"name": "miqueridahermana",
+			"type": "0",
+			"group": "1"
+		},
+		{
+			"name": "vampiro",
+			"type": "0",
+			"group": "0"
+		},
+		{
+			"name": "vampiro2",
+			"type": "0",
+			"group": "0"
+		},
+		{
+			"name": "venganza",
+			"type": "0",
+			"group": "0"
+		},
+		{
+			"name": "wild-party",
+			"type": "0",
+			"group": "0"
+		},
+		{
+			"name": "venganza-meta",
+			"type": "0",
+			"group": "0"
+		},
+		{
+			"name": "texel",
+			"type": "0",
+			"group": "1"
+		},
+		{
+			"name": "intruso",
+			"type": "0",
+			"group": "1"
+		},
+		{
+			"name": "intruso_v2",
+			"type": "0",
+			"group": "1"
+		},
+		{
+			"name": "bailando",
+			"type": "0",
+			"group": "1"
+		}
+	]
+
+}

@@ -1,0 +1,223 @@
+{
+    "items": [
+        {
+            "id": "anita",
+            "type": "pc",
+            "loc": "sala_baile",
+            "att": {
+ 				"generalState": [ {"state":"0"}	]
+            }
+        },
+        {
+            "id": "limbo",
+            "type": "loc"
+        },
+        {
+			"id": "sala_baile",
+            "type": "loc",
+			"address":[  
+				{  "dir":"out", 	"target":"hall"	}
+			],
+            "att": {
+ 				"generalState": [ {"state":"0"}	]
+            }
+        },
+        {
+			"id": "hall",
+            "type": "loc",
+			"address":[  
+				{   "dir":"in", "target":"sala_baile"  },
+				{   "dir":"up", "target":"pasillo_superior"  },
+				{   "dir":"out", "target":"exterior_mansión"  },
+				{   "dir":"right", "target":"consigna_seguridad"  },
+				{   "dir":"left", "target":"comedor"  }
+			],
+            "att": {
+ 				"generalState": [ {"state":"0"}	]
+            }
+        },
+        {
+			"id": "pasillo_superior",
+            "type": "loc",
+			"address":[  
+				{   "dir":"down", "target":"hall"  },
+				{   "dir":"right", "target":"despacho"  },
+				{   "dir":"left", "target":"laboratorio"  }
+			]
+        },
+        {
+			"id": "despacho",
+            "type": "loc",
+			"address":[  
+				{   "dir":"out", "target":"pasillo_superior"  }
+			],
+            "att": {
+ 				"generalState": [ {"state":"0"}	]
+            }
+        },
+        {
+			"id": "laboratorio",
+            "type": "loc",
+			"address":[  
+				{   "dir":"out", "target":"pasillo_superior"  }
+			],
+            "att": {
+ 				"generalState": [ {"state":"0"}	]
+            }
+        },
+        {
+			"id": "exterior_mansión",
+            "type": "loc",
+			"address":[],
+            "att": {
+ 				"generalState": [ {"state":"0"}	]
+            }
+        },
+        {
+			"id": "consigna_seguridad",
+            "type": "loc",
+			"address":[  
+				{   "dir":"out", "target":"hall"  }
+			],
+            "att": {
+ 				"generalState": [ {"state":"0"}	]
+            }
+        },	
+        {
+			"id": "comedor",
+            "type": "loc",
+			"address":[  
+				{   "dir":"out", "target":"hall"  }
+			],
+            "att": {
+ 				"generalState": [ {"state":"0"}	]
+            }
+        },
+        {
+			"id": "chica",
+            "type": "obj",
+            "loc": "despacho",
+            "att": {
+ 				"generalState": [ {"state":"0"}	]
+            }
+        },
+        {
+			"id": "químico",
+            "type": "obj",
+            "loc": "limbo",
+            "att": {
+ 				"generalState": [ {"state":"0"}	]
+            }
+        },
+        {
+			"id": "móvil_1",
+            "type": "obj",
+            "loc": "limbo",
+            "att": {
+ 				"generalState": [ {"state":"0"}	]
+            }
+        },
+        {
+			"id": "móvil_2",
+            "type": "obj",
+            "loc": "limbo",
+            "att": {
+ 				"generalState": [ {"state":"0"}	]
+            }
+        },
+        {
+			"id": "libro",
+            "type": "obj",
+            "loc": "despacho",
+            "att": {
+ 				"generalState": [ {"state":"0"}	]
+            }
+        },
+        {
+			"id": "carta",
+            "type": "obj",
+            "loc": "limbo",
+            "att": {
+ 				"generalState": [ {"state":"0"}	]
+            }
+        },
+        {
+			"id": "frasco",
+            "type": "obj",
+            "loc": "limbo",
+            "att": {
+ 				"generalState": [ {"state":"0"}	]
+            }
+        },
+        {
+			"id": "pastilla_1",
+            "type": "obj",
+            "loc": "limbo",
+            "att": {
+ 				"generalState": [ {"state":"0"}	]
+            }
+        },
+        {
+			"id": "pastilla_2",
+            "type": "obj",
+            "loc": "limbo",
+            "att": {
+ 				"generalState": [ {"state":"0"}	]
+            }
+        },
+        {
+			"id": "cuadro_eléctrico",
+            "type": "obj",
+            "loc": "consigna_seguridad",
+            "att": {
+ 				"generalState": [ {"state":"0"}	]
+            }
+        },
+	
+        {
+			"id": "ratón",
+            "type": "obj",
+            "loc": "laboratorio",
+            "att": {
+ 				"generalState": [ {"state":"0"}	]
+            }
+        },
+        {
+			"id": "atizador",
+            "type": "obj",
+            "loc": "comedor",
+            "att": {
+ 				"generalState": [ {"state":"0"}	]
+            }
+        },
+		{
+			"id": "armario",
+            "type": "obj",
+            "loc": "consigna_seguridad",
+            "att": {
+ 				"generalState": [ {"state":"0"}	]
+            }
+        }
+    ],
+	"attributes":[  
+ 	  {  
+         "id":"generalState",
+		 "properties": [
+                { "id": "state", "value": "0", "use":"mandatory" }
+          ]		 
+      }
+   ],
+	"actions": [
+		{  
+         "id":"examine_darkness",
+         "numpar":"0"
+		}
+	],
+	"directions": [	],
+	"attExceptions":[
+	  {  
+         "id":"isTakeAble",
+         "exceptionList": ["armario", "ratón", "chica", "químico", "cuadro_eléctrico"]
+	  } 	  
+   ]   
+}

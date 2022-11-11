@@ -1,0 +1,16 @@
+kl3:/>dir
+Directory of kl3/
+.
+..
+<DIR> loader
+kl3/> cd loader
+
+/loader/> dir
+Directory of kl3/loader
+.
+..
+rol.value: <empty>
+dataSource.value: <empty>
+<DIR> gameList
+setGame.exe
+

@@ -22,10 +22,16 @@ for (;;) {
 			let modPath = "./" + modName + ".js"
 			currentMod = require (modPath)
 			console.log ("Subcontext loaded: " + modName)
-		} else if (com[0] == "..") {
+			// to-do: pass parent state to the child?
+			
+
+		} else if (com[0] == "..") { //back
 			console.log ("Subcontext quit: " + modName)
 			if (stack.length == 0) return
-			let oldState = currentMod.getState()
+
+			let oldModName = modName
+			let oldState = currentMod.getState() // example: state of kl3-loader
+
 			console.log("Estado del módulo abandonado: " + JSON.stringify(oldState))
 			let previousEntry = stack.pop()
 			console.log("Estado recuperado: " + JSON.stringify(previousEntry))
@@ -34,6 +40,10 @@ for (;;) {
 			let modPath = "./" + modName + ".js"
 			currentMod = require (modPath)
 			currentMod.setState (previousEntry.state)
+
+			// passing the child state into the parent
+			// to-do: currentMod.setStateBranch (oldModName, oldState)
+
 		}
 	}
 }

@@ -2,8 +2,8 @@ const request = require('request');
 
 let serverName = "localhost"
 
-//module.exports = exports = {
-export default {
+module.exports = exports = {  // commonjs
+// export default {
 	setServerName:setServerName,
 	getServerName:getServerName,
 	setLocale:setLocale,

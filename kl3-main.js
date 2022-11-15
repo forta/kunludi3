@@ -1,6 +1,11 @@
 /*
   Module: kl3-main
   Description: it allows to load a game, share it and play it
+	Commands:
+		[...]
+		get-userList
+		chat, 1
+
 
 */
 

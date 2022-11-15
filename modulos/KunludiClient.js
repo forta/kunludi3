@@ -1,15 +1,15 @@
 // especie de nueva versión de RunnerProxie.js pero es sólo para conectarse con el servidor usando KunludiAPI.js
 
-import kunludiAPI from './KunludiAPI.js'
-// const kunludiAPI = require ('./KunludiAPI.js');
+// import kunludiAPI from './KunludiAPI.js' // commonjs
+const kunludiAPI = require ('./KunludiAPI.js');
 
 const libVersion = 'commonjs'
 
 let numberOfRequests = 0
 let refreshDataFromServer_Active = false
 
-//module.exports = exports = { // commonjs
-export default {
+module.exports = exports = { // commonjs
+//export default {
   setServerName:setServerName,
   getServerName:getServerName,
 	setLocale:setLocale,

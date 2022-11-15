@@ -17,8 +17,8 @@ let processedReactionList = []
 // Telegram: botAction
 
 //module.exports = exports = {
-//exports = module.exports =  {
-export default {
+exports = module.exports =  {  //commonjs
+//export default {
 
   loadGames:loadGames,
   join:join,
@@ -574,7 +574,7 @@ function sendUserCode(functionId, par) {
 function execLink(param) {
 
   if (offlineMode) {
-    console.log("execute link (locally): " + JSON.stringify(param))    
+    console.log("execute link (locally): " + JSON.stringify(param))
   }
   this.runner.execLink (param)
   this.refreshCache ()

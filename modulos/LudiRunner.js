@@ -9,8 +9,8 @@ let choice = {choiceId:'top', isLeafe:false, parent:''}
 
 /* Expose stuff */
 
-// module.exports = exports = { //commonjs
-export default {
+module.exports = exports = { //commonjs
+//export default {
 	dependsOn:dependsOn,
 	createWorld:createWorld,
 	processCode:processCode,

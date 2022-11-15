@@ -17,8 +17,8 @@ let refreshIntervalId = setInterval(refreshDataFromServer, KL_Delay);
 
 kunludiClient.setServerName(serverName)
 
-//module.exports = exports = {
-export default {
+module.exports = exports = {  //commonjs
+//export default {
 	initHttp:initHttp,
 	join:join,
 	getUserId:getUserId,

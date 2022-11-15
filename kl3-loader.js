@@ -11,7 +11,7 @@ let state = {
    rol:"host", // host or guest
    ds:"./games", // datasource: directory or URL
    gamelist:[],
-   game:null // game
+   game:{id:null,info:null,files:{}}
 }
 
 module.exports = exports = {
@@ -93,14 +93,61 @@ function execCommand(com) {
     state.gamelist = ["game1" , "game2"]
     console.log ("state.gamelist set to " + state.gamelist)
 
+  } else if (com[0] == "set-game") {
+    if (com[1] == "?") {
+      if (state.gamelist.length > 0) {
+        console.log ("Choose a game in " + state.gamelist)
+      } else {
+        console.log ("You first have to get a game list")
+      }
+      return
+    }
+
+    if (state.gamelist.length == 0) {
+      console.log ("You first have to get a game list")
+    }
+
+    let index = 0
+    for(len = state.gamelist.length; index < len; index++) {
+        if (state.gamelist[index] === com[1]) break
+    }
+    if (index < state.gamelist.length) {
+        state.game.id = com[1]
+        console.log ("state.game set to " + state.game.id)
+        state.game.info = "info"
+    } else {
+      console.log ("Wrong game " + com[1] + ". Choose a game in " + state.gamelist)
+    }
+
+  } else if (com[0] == "get-info") {
+    if (state.game.id == null) {
+      console.log ("Run set-game first")
+      return
+    }
+    console.log ("Info: " + state.game.info)
+
+  } else if (com[0] == "load-game") {
+
+    if (state.game.id == null) {
+      console.log ("Run set-game first")
+      return
+    }
+    console.log ("Loading " + state.game.id)
+
+    console.log ("to-do: load " + state.game.id)
+    state.game.loaded = true
+    state.game.files = {file1: "file1"}
+
+    console.log (state.game.id + " loaded")
+
   } else {
+
     console.log ("No reaction")
   }
 
 }
 
 // Other functions -------------------------------------------------
-
 
 function setRol(rolIn) {
   rol = (rolIn == 'guess')? 'guess': 'host'

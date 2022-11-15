@@ -1,13 +1,17 @@
 const prompt = require('prompt-sync')({sigint: true});
 
-let modName = "kl3-main"
-let modPath = "./" + modName + ".js"
-let currentMod = require (modPath)
-let crumbs = currentMod.getCrumbs()
+let modName
+let modPath
+let currentMod
+let crumbs
 let stack = []
-let state = {}
+let state = {
+	"kl3-loader": {game: {loaded:false} },
+	"kl3-connector": {token:-1}
+}
 
 function refreshCommands () {
+		state[modName] = currentMod.getState()
 		console.log("state: " + JSON.stringify (state))
 
 		crumbs.cleanCommands()
@@ -21,25 +25,20 @@ function refreshCommands () {
 	  crumbs.setAliases ("go-back", [".."])
 		//crumbs.addCommand ("set", 1)
 		crumbs.addCommand ("exit")
-		crumbs.setAliases ("exit", ["bye", "quit"])
+		crumbs.setAliases ("exit", ["bye", "q", "quit"])
 		//crumbs.addLocale ("es")
 		//crumbs.translateContext ("es", "root", "exit", ["salir", "fin"])
 		crumbs.addCommand ("help")
 		crumbs.setAliases ("help", ["h", "?"])
 
-
 		if (modName == "kl3-main") {
-			crumbs.addContext ("kl3-loader")
-			//if (state.gameLoaded) {
-			//	crumbs.addContext ("kl3-game")
-			//}
 
-			// if game available or already started
-			//   crumbs.addCommand ("play")
-
-			// if token gained
-			//   crumbs.addCommand ("get-userList")
-			//   crumbs.addCommand ("chat",1)
+			if (!state["kl3-loader"].game.loaded) {
+				crumbs.addContext ("kl3-loader")
+			} else {
+					crumbs.addContext ("kl3-game")
+			}
+			crumbs.addContext ("kl3-connector")
 
 		} else if (modName == "kl3-loader") {
 		  crumbs.addCommand ("set-rol", 1)
@@ -49,28 +48,59 @@ function refreshCommands () {
 		  crumbs.addCommand ("get-gamelist")
 			crumbs.setAliases ("get-gamelist", ["ggl"])
 
-			if (state.gamelist.lenght > 0) {
+			if (state[modName].gamelist.length > 0) {
 		  	crumbs.addCommand ("set-game", 1)
+				crumbs.setAliases ("set-game", ["sg"])
 			}
 
-			// if game already selected
-		  //   crumbs.addCommand ("get-game")
+			if (state[modName].game.id != null) {
+		  	crumbs.addCommand ("get-info")
+				crumbs.setAliases ("get-info", ["gi"])
+				crumbs.addCommand ("load-game")
+				crumbs.setAliases ("load-game", ["lg"])
+			}
+
+		} else if (modName == "kl3-game") {
+			crumbs.addCommand ("play")
+			crumbs.addContext ("kl3-files")
+
+		} else if (modName == "kl3-connector") {
+			crumbs.addCommand ("set-connector", 3)
+			if (state[modName].token != -1) {
+				crumbs.addCommand ("get-userList")
+				crumbs.addCommand ("chat", 1)
+			}
+
+		} else if (modName == "kl3-files") {
+			crumbs.addCommand ("get-savelist")
+			crumbs.addCommand ("save", 1)
+			crumbs.addCommand ("load", 1)
 		}
 
 }
 
 function mainLoop () {
 
+	// init
+	modName = "kl3-main"
+	modPath = "./" + modName + ".js"
+	currentMod = require (modPath)
+	crumbs = currentMod.getCrumbs()
+
 	crumbs.setModName (modName)
-	refreshCommands()
-	availableComs = crumbs.getCommands()
-	crumbs.showCommands()
+	let com = [""]
 
 	for (;;) {
 
+		refreshCommands()
+		if ( (com[0] == "") || (com[0] == "set-context")  || (com[0] == "go-back") || (com[0] == "help")){
+			// availableComs = crumbs.getCommands()
+			crumbs.showCommands()
+		}
+
 		// input
 		let typedCommand = prompt('# ');
-		let com = typedCommand.split(" ")
+		com = typedCommand.split(" ")
 		if (com.length == 0) continue
 		let com0 = com[0]
 		com = crumbs.commandResolution (com)
@@ -89,63 +119,40 @@ function mainLoop () {
 				continue
 			}
 
-			stack.push ({modName:modName, state: currentMod.getState()})
+			// save state
+			stack.push ({modName:modName})
+
 			modName = com[1]
 			let modPath = "./" + modName + ".js"
 			delete require.cache[require.resolve(modPath)]
 			currentMod = require (modPath)
 			crumbs = currentMod.getCrumbs()
 			crumbs.setModName (modName)
-			state = currentMod.getState()
-			console.log ("Subcontext loaded: " + modName)
-
-			refreshCommands()
-			availableComs = crumbs.getCommands()
-			crumbs.showCommands()
-
-			// to-do: pass parent state to the child?
-
 
 		} else if (com[0] == "go-back") { //back
 			console.log ("Subcontext quit: " + modName)
 			if (stack.length == 0) return
 
-			let oldModName = modName
-			let oldState = currentMod.getState() // example: state of kl3-loader
-
-			console.log("Estado del módulo abandonado: " + JSON.stringify(oldState))
+			// store child state
+			state[modName] = currentMod.getState()
 
 			let previousEntry = stack.pop()
-			console.log("Estado recuperado: " + JSON.stringify(previousEntry))
 			modName = previousEntry.modName
 			let modPath = "./" + modName + ".js"
 			delete require.cache[require.resolve(modPath)]
 			currentMod = require (modPath)
 			crumbs = currentMod.getCrumbs()
 			crumbs.setModName (modName)
+
+			// restore state
 			currentMod.setState (previousEntry.state)
-			state = currentMod.getState()
-
-			// put the child state in a branch
-			state[oldModName] = oldState
-
-			refreshCommands()
-			availableComs = crumbs.getCommands()
-			crumbs.showCommands()
-
-
-			// passing the child state into the parent
-			// to-do: currentMod.setStateBranch (oldModName, oldState)
-
+			state[currentMod] = currentMod.getState()
 		} else if (com[0] == "exit") {
 			console.log("See you")
 			return
 		} else if (com[0] == "help") {
 			console.log("Help: kunludi3 is under construction...")
 			console.log("")
-			refreshCommands()
-			availableComs = crumbs.getCommands()
-			crumbs.showCommands()
 		} else {
 			// code executed on the current module
 			currentMod.execCommand (com)

@@ -15,8 +15,8 @@ let hidenMessages = false;
 
 /* Expose stuff */
 
-//module.exports = exports = {
-export default {
+module.exports = exports = {  //commonjs
+//export default {
 	caMapping:caMapping,
 	executeGameAction:executeGameAction,
 	dependsOn:dependsOn,

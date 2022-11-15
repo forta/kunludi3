@@ -2,8 +2,8 @@
 let kernelMessages, libMessages, gameMessages, extraMesssages
 let locale
 
-// module.exports = exports = {
-export default {
+module.exports = exports = {  //commonjs
+//export default {
 	dependsOn:dependsOn,
   setLocale:setLocale,
   getLongMsgId:getLongMsgId,

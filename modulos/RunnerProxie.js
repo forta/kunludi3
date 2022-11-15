@@ -5,8 +5,8 @@
 const serverName = "localhost"
 
 // local connection -------------------------------
-const kunludiLocalClient = require ('./KunludiLocalClient.js').default;
-const kunludiClient = require ('./KunludiClient.js').default;
+const kunludiLocalClient = require ('./KunludiLocalClient.js') //.default;
+const kunludiClient = require ('./KunludiClient.js') //.default;
 let connected = false
 
 const KL_Delay = 500;

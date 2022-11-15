@@ -2,7 +2,7 @@ let games = []
 let gameSlotList = []
 let gameId = ''
 
-let offlineMode = false // detailed console.log only when offline game
+let offlineMode = true // detailed console.log only when offline game
 
 // language
 let locale = "xx", language = {}
@@ -127,12 +127,16 @@ function loadGames() {
 
 function join (gameId, slotId) {
 
+  if (typeof this.gameSlotList == 'undefined') {this.gameSlotList=[]}
+
   if (offlineMode) {
-    console.log ("state.locale: " + state.locale)
+    //console.log ("state.locale: " + state.locale)
     console.log ("Slot: " + slotId)
+    console.log ("gameSlotList: " + this.gameSlotList)
   }
 
   var subgameId = "", metaDealer, metaState
+
 
   var slotIndex = arrayObjectIndexOf (this.gameSlotList, "id", slotId)
   var gameWorld0
@@ -183,21 +187,25 @@ function join (gameId, slotId) {
   var gameIndex = arrayObjectIndexOf (this.games, "name", gameId)
   var libVersion = (typeof this.games[gameIndex].about.lib == "undefined")? 'v0.01': this.games[gameIndex].about.lib
 
-  var primitives = require ('../components/libs/' + libVersion + '/primitives.js').default;
-	var libReactions = require ('../components/libs/' + libVersion + '/libReactions.js').default;
+  if (offlineMode) {
+    console.log ("libVersion: " + libVersion)
+  }
+
+  var primitives = require ('./libs/' + libVersion + '/primitives.js') //.default;
+	var libReactions = require ('./libs/' + libVersion + '/libReactions.js')//.default;
 
   var gameReactions
   if (libVersion == 'v0.01') {
-    gameReactions = require ('../../data/games/' + gameId + ((subgameId != "")? '/' + subgameId  : "") + '/gReactions.js').default;
+    gameReactions = require ('../../data/games/' + gameId + ((subgameId != "")? '/' + subgameId  : "") + '/gReactions.js') //.default;
   } else {
-    gameReactions = require ('../components/libs/' + libVersion + '/userTemplate.js').default;
-    gameReactions.usr = require ('../../data/games/' + gameId + ((subgameId != "")? '/' + subgameId  : "") + '/gReactionsUsr.js').default;
+    gameReactions = require ('./libs/' + libVersion + '/userTemplate.js').default;
+    gameReactions.usr = require ('../../data/games/' + gameId + ((subgameId != "")? '/' + subgameId  : "") + '/gReactionsUsr.js') // .default;
 
   }
-	var langHandel = require ('../components/libs/' + libVersion + '/localization/' + this.locale + '/handler.js').default;
+	var langHandel = require ('./libs/' + libVersion + '/localization/' + this.locale + '/handler.js').default;
 
 	// world
-	var libWorld = require ('../components/libs/' + libVersion + '/world.json');
+	var libWorld = require ('./libs/' + libVersion + '/world.json');
 
   if ((slotIndex < 0) || (slotId == "default")) {
     gameWorld0 =  require ('../../data/games/' + gameId + ((subgameId != "")? '/' + subgameId : "") + '/world.json')
@@ -238,7 +246,7 @@ function loadGame (gameId, subgameId, primitives, libReactions, gameReactions, l
     // to-do: state?
   	//this.setLocale (state)
 
-    this.runner = require ('../components/LudiRunner.js').default;
+    this.runner = require ('./LudiRunner.js') //.default;
 
     if ( slotId == "default") {
   		// "compile" default ( == initial) state
@@ -297,7 +305,7 @@ function setLocale (state) {
 
   this.locale = state.locale
 
-	this.language = require ('../components/LudiLanguage.js').default;
+	this.language = require ('./LudiLanguage.js') // .default;
 
   this.language.setLocale (state.locale)
 

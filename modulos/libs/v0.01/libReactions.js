@@ -21,8 +21,8 @@ let attributes = []
 
 /* Expose stuff */
 
-//module.exports = exports = {
-export default {
+module.exports = exports = {  //commonjs
+//export default {
   dependsOn:dependsOn,
   processAction:processAction,
 	actionIsEnabled:actionIsEnabled,

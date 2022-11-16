@@ -31,7 +31,7 @@ module.exports = exports = { //commonjs
 	expandDynReactions:expandDynReactions,
 
 	// vue2?:
-	PCState: {},
+  PCState: {profile: {indexPC:0, loc:2}}, // loc:2?
 	choices: [],
 	world: []
 
@@ -459,6 +459,8 @@ function processChoice (newChoice, optionMsg) {
 		}
 
 		// vue2: var indexPCBefore = this.PCState.profile.indexPC
+		// // DEBUG:
+		console.log ("this.PCState: " + JSON.stringify (this.PCState))
 		var indexPCBefore = this.PCState.profile.indexPC
 
 		// reseting variables

@@ -367,6 +367,7 @@ function actionTranslation (choice, isEcho) {
 	if (choice.choiceId == 'action0') {
 
 		outText = this.msgResolution(this.getLongMsgId ("actions", choice.action.actionId))
+
 		// echo message
 		outText4echo = outText
 
@@ -376,6 +377,7 @@ function actionTranslation (choice, isEcho) {
 			outText = this.msgResolution(this.getLongMsgId ("actions", choice.action.actionId))
 			// echo message
 			let msg = this.msgResolution  (this.getLongMsgId ("messages", "Echo_o1_a1", "txt"))
+			//debug simu
 			outText4echo =  this.expandParams (msg, {a1: choice.action.actionId, o1: choice.action.item1Id})
 		} else {
 			outText = this.msgResolution(this.getLongMsgId ("actions", choice.action.actionId)) +
@@ -388,14 +390,13 @@ function actionTranslation (choice, isEcho) {
 
 
 	}  else if (choice.choiceId == 'dir1') {
-		// show the target only ii it is known
+		// show the target only if it is known
 		// console.log	("choice.action??: " + JSON.stringify(choice.action) )
 
 		var txt = this.msgResolution(this.getLongMsgId ("directions", choice.action.d1Id, "desc"))
 		if (choice.action.isKnown) txt += " -> " + this.msgResolution(this.getLongMsgId ("items", choice.action.targetId, "txt"))
 		outText = txt
 		outText4echo = outText
-
 	}
 
 	let playerSt = ""

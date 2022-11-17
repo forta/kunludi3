@@ -321,9 +321,9 @@ function setLocale (state) {
   state.gameAbout = state.games[gameIndex].about
   var libVersion = (typeof state.gameAbout.lib == "undefined")? 'v0.01': state.gameAbout.lib
 
-	this.langHandler = require ('../components/libs/' + libVersion + '/localization/' + this.locale + '/handler.js');
+	this.langHandler = require ('./libs/' + libVersion + '/localization/' + this.locale + '/handler.js');
 
-	this.libMessages = require ('../components/libs/' + libVersion + '/localization/' + this.locale + '/messages.json');
+	this.libMessages = require ('./libs/' + libVersion + '/localization/' + this.locale + '/messages.json');
 	this.gameMessages = require ('../../data/games/' + this.gameId + ((this.subgameId != "")? '/' + this.subgameId  : "") + '/localization/' + this.locale + '/messages.json')
 	this.gameExtraMessages = require ('../../data/games/' + this.gameId + ((this.subgameId != "")? '/' + this.subgameId  : "") + '/localization/' + this.locale + '/extraMessages.json')
 	//this.language.devMessages =  this.runner.devMessages
@@ -677,6 +677,11 @@ function refreshCache () {
 
 	this.translation.menu = translatedStuff.menu
 	this.translation.menuPiece = this.runner.menuPiece
+
+  if (offlineMode) {
+    console.log ("refreshCache done")
+  }
+
 
 }
 

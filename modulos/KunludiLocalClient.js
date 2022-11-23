@@ -2,7 +2,7 @@ let games = []
 let gameSlotList = []
 let gameId = ''
 
-let offlineMode = true // detailed console.log only when offline game
+let offlineMode = false // detailed console.log only when offline game
 
 // language
 let locale = "xx", language = {}

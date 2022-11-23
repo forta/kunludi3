@@ -24,20 +24,48 @@ function showReactionList(reactionList) {
 }
 
 function showChoiceList(choiceList) {
-  // acciones directas
+  // Grupos: choiceId": top, directActions, directionGroup, itemGroup (itemGroup: here, carrying)
+
+  // acciones directas: "choiceId":"action0
   console.log ("Acciones Directas")
   for (let c=0; c<choiceList.length;c++) {
-    if (choiceList[c].isLeafe) {
+    if (choiceList[c].choiceId == "action0") {
       console.log ("\t>" + c + ": " + getChoice(choiceList[c]))
     }
   }
-  // acciones no directas
-  console.log ("Acciones No-Directas")
+
+  // direcciones directas:  "choiceId":"dir1"
+  console.log ("Direcciones")
   for (let c=0; c<choiceList.length;c++) {
-    if (! choiceList[c].isLeafe) {
+    if (choiceList[c].choiceId == "dir1") {
       console.log ("\t>" + c + ": " + getChoice(choiceList[c]))
     }
   }
+
+
+  // items
+  console.log ("Items")
+  for (let c=0; c<choiceList.length;c++) {
+    if (choiceList[c].choiceId == "obj1") {
+      console.log ("\t>" + c + ": " + getChoice(choiceList[c]))
+    }
+  }
+
+  // on selected item
+  console.log ("On selected item")
+  for (let c=0; c<choiceList.length;c++) {
+    if ((choiceList[c].choiceId == "action") || (choiceList[c].choiceId == "action2")) {
+      console.log ("\t>" + c + ": " + getChoice(choiceList[c]))
+    }
+  }
+
+  //resto
+  /*
+  for (let c=0; c<choiceList.length;c++) {
+      console.log ("\t>" + c + ": " + JSON.stringify(choiceList[c]))
+  }
+  */
+
 
 }
 

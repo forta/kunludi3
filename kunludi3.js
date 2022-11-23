@@ -1,4 +1,5 @@
 const prompt = require('prompt-sync')({sigint: true});
+const kunludi_proxy = require ('./modulos/RunnerProxie.js');
 
 let modName
 let modPath
@@ -9,6 +10,7 @@ let state = {
 	"kl3-loader": {game: {loaded:false} },
 	"kl3-connector": {token:-1}
 }
+
 
 function refreshCommands () {
 		state[modName] = currentMod.getState()
@@ -87,6 +89,7 @@ function mainLoop () {
 	currentMod = require (modPath)
 	crumbs = currentMod.getCrumbs()
 
+
 	crumbs.setModName (modName)
 	let com = [""]
 
@@ -129,6 +132,12 @@ function mainLoop () {
 			crumbs = currentMod.getCrumbs()
 			crumbs.setModName (modName)
 
+			// pointer to the main module
+			if ((modName == "kl3-loader")||(modName == "kl3-game")) {
+					currentMod.setKunludiProxi (kunludi_proxy)
+			}
+
+
 		} else if (com[0] == "go-back") { //back
 			console.log ("Subcontext quit: " + modName)
 			if (stack.length == 0) return
@@ -149,7 +158,7 @@ function mainLoop () {
 			state[currentMod] = currentMod.getState()
 		} else if (com[0] == "exit") {
 			console.log("See you")
-			return
+			process.exit()
 		} else if (com[0] == "help") {
 			console.log("Help: kunludi3 is under construction...")
 			console.log("")

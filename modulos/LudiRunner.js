@@ -460,7 +460,7 @@ function processChoice (newChoice, optionMsg) {
 
 		// vue2: var indexPCBefore = this.PCState.profile.indexPC
 		// // DEBUG:
-		console.log ("this.PCState: " + JSON.stringify (this.PCState))
+		//console.log ("this.PCState: " + JSON.stringify (this.PCState))
 		var indexPCBefore = this.PCState.profile.indexPC
 
 		// reseting variables

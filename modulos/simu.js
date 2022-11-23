@@ -8,58 +8,65 @@ const gameId = "miqueridahermana"
 const slotId = "default"
 const locale = "es"
 
+let debugMode = false
+
 const kunludi_proxy = require ('./RunnerProxie.js');
 
+// get game list
 kunludi_proxy.loadGames()
+let state = {locale:locale, kernelMessages: []} // needed
 
-let state = {locale:locale, kernelMessages: []}
-
-state.games = kunludi_proxy.getGames()
-
+// join to a selected game
+state.games = kunludi_proxy.getGames() // needed
 kunludi_proxy.setLocale(state)
-
 kunludi_proxy.refreshGameSlotList (gameId)
-
 kunludi_proxy.join (gameId, slotId)
-
-// setLocale otra vez para tener los mensajes traducidos
-kunludi_proxy.setLocale(state)
+kunludi_proxy.setLocale(state) // setLocale otra vez para tener los mensajes traducidos
 
 const kunludi_render = require ('./KunludiRender.js');
 
-for (;;) {
+function playGame () {
 
-  // show description
-  console.log ("\nReaction List:\n")
-  kunludi_render.showReactionList(kunludi_proxy.getReactionList())
+  for (;;) {
 
-  // show available user actions
-  console.log ("Choices:\n")
-  let choices = kunludi_proxy.getChoices()
-  kunludi_render.showChoiceList(choices)
+    // show description
+    //console.log ("\n-----------------------------\n")
+    //kunludi_render.showReactionList(kunludi_proxy.getHistory())
 
-  // get user action
-  let com
-  let typedCommand = prompt('# ');
-  com = typedCommand.split(" ")
-  if (com.length == 0) continue
-  if (com.length == 0) {
-    console.log ("Wrong command")
-    continue
+    console.log ("\n-----------------------------\n")
+    kunludi_render.showReactionList(kunludi_proxy.getReactionList())
+
+    console.log ("\ngetPCState:\n" + JSON.stringify(kunludi_proxy.getPCState()))
+
+    // show available user actions
+    console.log ("\nTus aciones:\n")
+    let choices = kunludi_proxy.getChoices()
+    kunludi_render.showChoiceList(choices)
+
+    // get user action
+    let com
+    let typedCommand = prompt('# ');
+    com = typedCommand.split(" ")
+    if (com.length == 0) continue
+    if (com.length == 0) {
+      console.log ("Wrong command")
+      continue
+    }
+
+    if (com[0] == "q") {
+      console.log ("Bye" )
+      process.exit()
+    }
+
+    let comValue = com[0]
+
+    // echo
+    console.log ("Echo #" + comValue + ": " + kunludi_render.getChoice(choices[comValue]) )
+
+    // run user action (demo)
+    kunludi_proxy.processChoice (choices[comValue])
+
   }
-
-  if (com[0] == "q") {
-    console.log ("Bye" )
-    process.exit()
-  }
-
-
-  let comValue = com[0]
-
-  // echo
-  console.log ("Echo #" + comValue + ": " + kunludi_render.getChoice(choices[comValue]) )
-
-  // run user action (demo)
-  kunludi_proxy.processChoice (choices[comValue])
-
 }
+
+playGame()

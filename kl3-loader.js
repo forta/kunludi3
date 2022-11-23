@@ -5,6 +5,7 @@
 //var crumbs = require ('kl3-crumbs') // the multilingual breadcrumbs
 delete require.cache[require.resolve('./modulos/kl3-crumbs/index.js')]
 let crumbs = require ('./modulos/kl3-crumbs/index.js')
+let kunludi_proxy
 
 // state
 let state = {
@@ -22,6 +23,7 @@ module.exports = exports = {
   execCommand:execCommand,
 
   // other functions
+  setKunludiProxi:setKunludiProxi,
   setRol:setRol, // host (local execution) or guess (remote execution)
   setDataSource:setDataSource, // directory or URL
   getGameList:getGameList,
@@ -89,8 +91,7 @@ function execCommand(com) {
       return
     }
 
-    // demo
-    state.gamelist = ["game1" , "game2"]
+    state.gamelist = getGameList()
     console.log ("state.gamelist set to " + state.gamelist)
 
   } else if (com[0] == "set-game") {
@@ -109,12 +110,13 @@ function execCommand(com) {
 
     let index = 0
     for(len = state.gamelist.length; index < len; index++) {
-        if (state.gamelist[index] === com[1]) break
+        if (state.gamelist[index].id === com[1]) break
     }
     if (index < state.gamelist.length) {
         state.game.id = com[1]
         console.log ("state.game set to " + state.game.id)
-        state.game.info = "info"
+        state.game.info = setGame (index)
+        console.log ("About: " + JSON.stringify(state.game.info))
     } else {
       console.log ("Wrong game " + com[1] + ". Choose a game in " + state.gamelist)
     }
@@ -124,7 +126,8 @@ function execCommand(com) {
       console.log ("Run set-game first")
       return
     }
-    console.log ("Info: " + state.game.info)
+
+    console.log ("Info: " + JSON.stringify(state.game.info))
 
   } else if (com[0] == "load-game") {
 
@@ -138,6 +141,13 @@ function execCommand(com) {
     state.game.loaded = true
     state.game.files = {file1: "file1"}
 
+    let stateStuff = {locale:"es", kernelMessages: []}  //to-do: needed
+    stateStuff.games = kunludi_proxy.getGames() //to-do: needed
+    kunludi_proxy.setLocale(stateStuff)
+    kunludi_proxy.refreshGameSlotList (state.game.id)
+    kunludi_proxy.join (state.game.id, "default")  //  slotId = "default"
+    kunludi_proxy.setLocale(stateStuff) // setLocale otra vez para tener los mensajes traducidos
+
     console.log (state.game.id + " loaded")
 
   } else {
@@ -148,6 +158,10 @@ function execCommand(com) {
 }
 
 // Other functions -------------------------------------------------
+
+function setKunludiProxi(kunludi_proxyIn) {
+  kunludi_proxy = kunludi_proxyIn
+}
 
 function setRol(rolIn) {
   rol = (rolIn == 'guess')? 'guess': 'host'
@@ -161,16 +175,31 @@ function setDataSource(dsIn) {
 }
 
 function getGameList() {
-  gameList = [
-    {id:"game1", title:"title1"},
-    {id:"game2", title:"title2"}
-  ]
-  refreshCrumbs()
+
+  kunludi_proxy.loadGames()
+  // to-do: locale?
+  let state = {locale:"es", kernelMessages: []}
+  state.games = kunludi_proxy.getGames()
+  kunludi_proxy.setLocale(state)
+  //console.log ("state.games: " + JSON.stringify (state.games))
+
+  gameList = []
+  for (let i=0; i<state.games.length;i++) {
+    let langIndex = 0
+    // to-do_ look for about.translation[langIndex].language == local
+    gameList.push ({id:state.games[i].name, title:state.games[i].name})  // ,state.games[i].about[langIndex].title
+  }
+  return gameList
+
 }
 
-function setGame(gameIdIn) {
-  gameId = gameIdIn
-  refreshCrumbs()
+function setGame(gameIndex) {
+  let gameList = kunludi_proxy.getGames()
+  let langIndex = 0
+
+  // to-do_ look for about.translation[langIndex].language == local
+  return gameList[gameIndex].about.translation[langIndex]
+
 }
 
 function getGame() {

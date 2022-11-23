@@ -9,9 +9,10 @@
 //var crumbs = require ('kl3-crumbs') // the multilingual breadcrumbs
 delete require.cache[require.resolve('./modulos/kl3-crumbs/index.js')]
 let crumbs = require ('./modulos/kl3-crumbs/index.js')
+const kunludi_render = require ('./modulos/KunludiRender.js');
+const prompt = require('prompt-sync')({sigint: true});
 
-// módulo cargados por el proxy!:
-const kunludi_proxy = require ('./modulos/RunnerProxie.js').default;
+let kunludi_proxy
 
 // state
 let state = {
@@ -26,6 +27,7 @@ module.exports = exports = {
 	execCommand:execCommand,
 
 	// other functions
+	  setKunludiProxi:setKunludiProxi,
 
 }
 
@@ -48,10 +50,57 @@ function execCommand(com) {
 
 	if (com[0] == "play") {
 			console.log ("The game stats here!")
+			playGame()
 	}
-
-
 
 }
 
 // Other functions -------------------------------------------------
+
+function setKunludiProxi(kunludi_proxyIn) {
+  kunludi_proxy = kunludi_proxyIn
+}
+
+function playGame () {
+
+  for (;;) {
+
+    // show description
+    //console.log ("\n-----------------------------\n")
+    //kunludi_render.showReactionList(kunludi_proxy.getHistory())
+
+    console.log ("\n-----------------------------\n")
+    kunludi_render.showReactionList(kunludi_proxy.getReactionList())
+
+    console.log ("\ngetPCState:\n" + JSON.stringify(kunludi_proxy.getPCState()))
+
+    // show available user actions
+    console.log ("\nTus aciones:\n")
+    let choices = kunludi_proxy.getChoices()
+    kunludi_render.showChoiceList(choices)
+
+    // get user action
+    let com
+    let typedCommand = prompt('# ');
+    com = typedCommand.split(" ")
+    if (com.length == 0) continue
+    if (com.length == 0) {
+      console.log ("Wrong command")
+      continue
+    }
+
+    if (com[0] == "q") {
+      console.log ("See you" )
+      return
+    }
+
+    let comValue = com[0]
+
+    // echo
+    console.log ("Echo #" + comValue + ": " + kunludi_render.getChoice(choices[comValue]) )
+
+    // run user action (demo)
+    kunludi_proxy.processChoice (choices[comValue])
+
+  }
+}

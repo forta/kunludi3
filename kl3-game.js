@@ -65,20 +65,25 @@ function playGame () {
 
   for (;;) {
 
-    // show description
+    // to-do: show description
     //console.log ("\n-----------------------------\n")
     //kunludi_render.showReactionList(kunludi_proxy.getHistory())
 
-    console.log ("\n-----------------------------\n")
+    console.log ("\n-Reaction List ----------------------------\n")
     kunludi_render.showReactionList(kunludi_proxy.getReactionList())
 
     console.log ("\ngetPCState:\n" + JSON.stringify(kunludi_proxy.getPCState()))
 
-    // show available user actions
+		console.log ("\n-Choices ----------------------------\n")
+		// to-do: presskey / menu / choices / typing / links
+		console.log ("\npendingPressKey: " + kunludi_proxy.getPendingPressKey())
+
+		// show available user actions
     console.log ("\nTus aciones:\n")
     let choices = kunludi_proxy.getChoices()
     kunludi_render.showChoiceList(choices)
 
+		console.log ("\n ----------------------------\n")
     // get user action
     let com
     let typedCommand = prompt('# ');
@@ -96,11 +101,17 @@ function playGame () {
 
     let comValue = com[0]
 
-    // echo
-    console.log ("Echo #" + comValue + ": " + kunludi_render.getChoice(choices[comValue]) )
+		// depending on the "awaiting state"
 
-    // run user action (demo)
-    kunludi_proxy.processChoice (choices[comValue])
-
+		if (kunludi_proxy.getPendingPressKey()) {
+			// key pressed
+			console.log ("Key pressed")
+			kunludi_proxy.keyPressed()
+		} else {
+			// echo
+	    console.log ("Echo #" + comValue + ": " + kunludi_render.getChoice(choices[comValue]) )
+	    // run user action (demo)
+	    kunludi_proxy.processChoice (choices[comValue])
+		} // to-do: if menu
   }
 }

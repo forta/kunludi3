@@ -1,0 +1,9 @@
+# list of commands before playing
+cc kl3-loader       # change to the loader module
+ggl                 # get game list
+sg miqueridahermana # set game to read its properties
+gi                  # get info: to show the properties
+lg                  # load game: this enables the kl3-game module
+..                  # go back to the main module
+cc kl3-game         # change to the game module
+play                # start playing interactively

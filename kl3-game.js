@@ -65,23 +65,43 @@ function playGame () {
 
   for (;;) {
 
-    // to-do: show description
-    //console.log ("\n-----------------------------\n")
-    //kunludi_render.showReactionList(kunludi_proxy.getHistory())
+		//kunludi_proxy.getGameIsOver()
+		//kunludi_proxy.getCurrentChoice()
+		//kunludi_proxy.getLastAction()
+		//kunludi_proxy.getPlayerList() // not here
+
+		let turn = kunludi_proxy.getGameTurn()
+		console.log ("Current turn: " + turn)
+
+		let history = kunludi_proxy.getHistory()
+		if (history.length >0) {
+			let lastHistoryReaction = history[history.length-1]
+			console.log ("\n# " + lastHistoryReaction.gameTurn + "\n")
+			console.log ("#Echo: " + JSON.stringify(lastHistoryReaction.action))
+			console.log ("#Text:" + JSON.stringify(lastHistoryReaction.reactionList))
+		}
 
     console.log ("\n-Reaction List ----------------------------\n")
     kunludi_render.showReactionList(kunludi_proxy.getReactionList())
 
-    console.log ("\ngetPCState:\n" + JSON.stringify(kunludi_proxy.getPCState()))
-
-		console.log ("\n-Choices ----------------------------\n")
+    console.log ("PC State:" + JSON.stringify(kunludi_proxy.getPCState()))
+		console.log ("-Choices ----------------------------\n")
 		// to-do: presskey / menu / choices / typing / links
-		console.log ("\npendingPressKey: " + kunludi_proxy.getPendingPressKey())
 
-		// show available user actions
-    console.log ("\nTus aciones:\n")
-    let choices = kunludi_proxy.getChoices()
-    kunludi_render.showChoiceList(choices)
+		let menu = kunludi_proxy.getMenu()
+		let choices
+
+		if (kunludi_proxy.getPendingPressKey()) {
+			console.log ("Pending Press Key: " + JSON.stringify(kunludi_proxy.getPendingPressKey()))
+		  console.log ("Press Key Message: " + JSON.stringify(kunludi_proxy.getPressKeyMessage()))
+		} else if (menu.length > 0) {
+			console.log ("Menu: " + JSON.stringify(menu))
+
+		} else {
+			console.log ("Tus aciones:")
+	    choices = kunludi_proxy.getChoices()
+	    kunludi_render.showChoiceList(choices)
+		}
 
 		console.log ("\n ----------------------------\n")
     // get user action
@@ -107,8 +127,14 @@ function playGame () {
 			// key pressed
 			console.log ("Key pressed")
 			kunludi_proxy.keyPressed()
+		} else if (menu.length > 0) {
+			let pendingChoice = kunludi_proxy.getPendingChoice()
+			let menuIndex = com[0]
+			pendingChoice.action.option = menu[menuIndex].id
+			pendingChoice.action.msg = menu[menuIndex].msg
+			pendingChoice.action.menu = menu
+			kunludi_proxy.processChoice (pendingChoice)
 		} else {
-			// echo
 	    console.log ("Echo #" + comValue + ": " + kunludi_render.getChoice(choices[comValue]) )
 	    // run user action (demo)
 	    kunludi_proxy.processChoice (choices[comValue])

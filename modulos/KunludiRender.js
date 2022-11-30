@@ -5,7 +5,9 @@ module.exports = exports = { // commonjs
   getClientTpye:getClientTpye,
   showReactionList:showReactionList,
   showChoiceList:showChoiceList,
-  getChoice:getChoice
+  getChoice:getChoice,
+  showReaction:showReaction,
+  replaceCR:replaceCR
 
 }
 
@@ -15,13 +17,19 @@ function getClientTpye() {
 
 function showReactionList(reactionList) {
   for (let r=0; r<reactionList.length;r++) {
-    if (reactionList[r].i8n.es.txt != "") {
-        console.log (reactionList[r].i8n.es.txt)
-    } else {
-      console.log ("# " + r + ": " + JSON.stringify(reactionList[r]))
-    }
+    showReaction (reactionList[r])
   }
 }
+
+function showReaction(reaction) {
+  if (reaction.i8n.es.txt != "") {
+      console.log (reaction.i8n.es.txt)
+  } else {
+    console.log ("# " + r + ": " + JSON.stringify(reaction))
+  }
+
+}
+
 
 function showChoiceList(choiceList) {
   // Grupos: choiceId": top, directActions, directionGroup, itemGroup (itemGroup: here, carrying)
@@ -75,4 +83,10 @@ function getChoice(choice) {
   }
 
   return choice.action.actionId + ": " + JSON.stringify(choice.i8n)
+}
+
+function replaceCR(msgIn) {
+  let msgOut = msgIn
+
+  return msgOut + "++++++++++"
 }

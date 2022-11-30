@@ -92,7 +92,7 @@ function execCommand(com) {
     }
 
     state.gamelist = getGameList()
-    console.log ("state.gamelist set to " + state.gamelist)
+    console.log ("state.gamelist was set")
 
   } else if (com[0] == "set-game") {
     if (com[1] == "?") {
@@ -137,7 +137,6 @@ function execCommand(com) {
     }
     console.log ("Loading " + state.game.id)
 
-    console.log ("to-do: load " + state.game.id)
     state.game.loaded = true
     state.game.files = {file1: "file1"}
 

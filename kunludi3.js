@@ -14,7 +14,9 @@ let state = {
 
 function refreshCommands () {
 		state[modName] = currentMod.getState()
-		console.log("state: " + JSON.stringify (state))
+
+		// Debug:
+		//console.log("state: " + JSON.stringify (state))
 
 		crumbs.cleanCommands()
 		// intrinsic commandsPtr
@@ -32,6 +34,9 @@ function refreshCommands () {
 		//crumbs.translateContext ("es", "root", "exit", ["salir", "fin"])
 		crumbs.addCommand ("help")
 		crumbs.setAliases ("help", ["h", "?"])
+
+		crumbs.addCommand ("exec")
+		crumbs.setAliases ("exec", ["x"])
 
 		if (modName == "kl3-main") {
 
@@ -81,6 +86,81 @@ function refreshCommands () {
 
 }
 
+function processModuleCommand (com) {
+
+	if (com.length == 0) {
+		console.log ("Empty command")
+		return
+	}
+
+	if (com[0] == "exit") {
+		console.log("See you")
+		process.exit()
+	} else if (com[0] == "help") {
+		console.log("Help: kunludi3 is under construction...")
+		console.log("")
+	} else if (com[0] == "set-context") {
+		if (!crumbs.contextExists (com[1])) {
+			console.log ("Wrong context [" + com[1] + "]")
+			return
+		}
+
+		// save state
+		stack.push ({modName:modName})
+
+		modName = com[1]
+		let modPath = "./" + modName + ".js"
+		delete require.cache[require.resolve(modPath)]
+		currentMod = require (modPath)
+		crumbs = currentMod.getCrumbs()
+		crumbs.setModName (modName)
+
+		// pointer to the main module
+		if ((modName == "kl3-loader")||(modName == "kl3-game")) {
+				currentMod.setKunludiProxi (kunludi_proxy)
+		}
+
+
+	} else if (com[0] == "go-back") { //back
+		console.log ("Subcontext quit: " + modName)
+		if (stack.length == 0) return
+
+		// store child state
+		state[modName] = currentMod.getState()
+
+		let previousEntry = stack.pop()
+		modName = previousEntry.modName
+		let modPath = "./" + modName + ".js"
+		delete require.cache[require.resolve(modPath)]
+		currentMod = require (modPath)
+		crumbs = currentMod.getCrumbs()
+		crumbs.setModName (modName)
+
+		// restore state
+		currentMod.setState (previousEntry.state)
+		state[currentMod] = currentMod.getState()
+	} else {
+		// code executed on the current module
+		currentMod.execCommand (com)
+	}
+
+	console.log("")
+	refreshCommands()
+
+}
+
+function inputPreprocessing (com) {
+	let com0 = crumbs.commandResolution (com)
+
+	if (com0 != "" ) {
+		com[0] = com0
+		//if (com[0]!=com0) console.log("You typed alias [" + com0 + "] instead of [" + com[0] + "]");
+		console.log('Command: ' + com);
+		return true
+	}
+	return false
+}
+
 function mainLoop () {
 
 	// init
@@ -88,86 +168,44 @@ function mainLoop () {
 	modPath = "./" + modName + ".js"
 	currentMod = require (modPath)
 	crumbs = currentMod.getCrumbs()
-
-
 	crumbs.setModName (modName)
 	let com = [""]
+	refreshCommands()
 
 	for (;;) {
 
-		refreshCommands()
+		console.log ("stack: " + JSON.stringify(stack))
+
+		// input
+		let typedCommand = prompt('# ');
+		com = typedCommand.split(" ")
+		if (! inputPreprocessing (com)) {
+			continue
+		}
+
 		if ( (com[0] == "") || (com[0] == "set-context")  || (com[0] == "go-back") || (com[0] == "help")){
 			// availableComs = crumbs.getCommands()
 			crumbs.showCommands()
 		}
 
-		// input
-		let typedCommand = prompt('# ');
-		com = typedCommand.split(" ")
-		if (com.length == 0) continue
-		let com0 = com[0]
-		com = crumbs.commandResolution (com)
-		if (com.length == 0) {
-			console.log ("Wrong command")
-			continue
-		}
-
-		//if (com[0]!=com0) console.log("You typed alias [" + com0 + "] instead of [" + com[0] + "]");
-		//console.log('Command: ' + com);
-
-	  // processing commands
-		if (com[0] == "set-context") {
-			if (!crumbs.contextExists (com[1])) {
-				console.log ("Wrong context [" + com[1] + "]")
-				continue
-			}
-
-			// save state
-			stack.push ({modName:modName})
-
-			modName = com[1]
-			let modPath = "./" + modName + ".js"
-			delete require.cache[require.resolve(modPath)]
-			currentMod = require (modPath)
-			crumbs = currentMod.getCrumbs()
-			crumbs.setModName (modName)
-
-			// pointer to the main module
-			if ((modName == "kl3-loader")||(modName == "kl3-game")) {
-					currentMod.setKunludiProxi (kunludi_proxy)
-			}
-
-
-		} else if (com[0] == "go-back") { //back
-			console.log ("Subcontext quit: " + modName)
-			if (stack.length == 0) return
-
-			// store child state
-			state[modName] = currentMod.getState()
-
-			let previousEntry = stack.pop()
-			modName = previousEntry.modName
-			let modPath = "./" + modName + ".js"
-			delete require.cache[require.resolve(modPath)]
-			currentMod = require (modPath)
-			crumbs = currentMod.getCrumbs()
-			crumbs.setModName (modName)
-
-			// restore state
-			currentMod.setState (previousEntry.state)
-			state[currentMod] = currentMod.getState()
-		} else if (com[0] == "exit") {
-			console.log("See you")
-			process.exit()
-		} else if (com[0] == "help") {
-			console.log("Help: kunludi3 is under construction...")
-			console.log("")
+	  // processing batch file
+		if (com[0] != "exec") {
+			// interactive command
+			processModuleCommand (com)
 		} else {
-			// code executed on the current module
-			currentMod.execCommand (com)
-		}
+			// batch program
+			let batch = ["cc kl3-loader", "ggl", "sg miqueridahermana", "gi", "lg", "..", "cc kl3-game", "play"]
 
-		console.log("")
+			for (let p=0; p<batch.length;p++) {
+				let com2 = batch[p].split(" ")
+				console.log ("\nExecuting " + (p+1) + "/" + batch.length + ": " + JSON.stringify(com2) + "\n")
+				if (inputPreprocessing(com2)) {
+					//console.log ("Executing2 " + p + "/" + batch.length + ": " + JSON.stringify(com2))
+					processModuleCommand (com2)
+				}
+			}
+
+		}
 
 	}
 }

@@ -44,7 +44,7 @@ function setState(stateIn) {
 }
 
 function execCommand(com) {
-	console.log ("Executing [" + com + "] on module " + crumbs.getModName())
+		console.log ("Error trying to execute [" + com + "] on module " + crumbs.getModName())
 }
 
 

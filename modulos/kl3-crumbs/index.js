@@ -145,12 +145,13 @@ function contextExists (context) {
 
 function commandResolution (com) {
 	let index = arrayObjectIndexOf (commandsPtr, "id", com[0])
+	let com0
 	if (index < 0) {
 		for(let i = 0, len = commandsPtr.length; i < len; i++) {
 				for(let j = 0, len2 = commandsPtr[i].aliases.length; j < len2; j++) {
 					if (commandsPtr[i].aliases[j].id === com[0]) {
 						index = i
-						com[0]= commandsPtr[i].id
+						com0= commandsPtr[i].id
 						break
 					}
 				}
@@ -160,15 +161,15 @@ function commandResolution (com) {
 
 	if (index < 0) {
 		showLog (4, "Wrong command " + com[0])
-		return []
+		return ""
 	}
 
 	if (commandsPtr[index].numPars != com.length - 1) {
 		showLog (3, "The number of parameters was " + (com.length-1) + " but it should be " + commandsPtr[index].numPars)
-		return []
+		return ""
 	}
 
-	return com
+	return commandsPtr[index].id
 }
 
 function getCommands () {

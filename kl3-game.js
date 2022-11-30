@@ -46,11 +46,11 @@ function setState(stateIn) {
 }
 
 function execCommand(com) {
-	console.log ("Executing [" + com + "] on module " + crumbs.getModName())
-
 	if (com[0] == "play") {
 			console.log ("The game stats here!")
 			playGame()
+	} else {
+		console.log ("Error trying to execute [" + com + "] on module " + crumbs.getModName())
 	}
 
 }
@@ -63,6 +63,7 @@ function setKunludiProxi(kunludi_proxyIn) {
 
 function playGame () {
 
+	let selectedItem = ""
   for (;;) {
 
 		//kunludi_proxy.getGameIsOver()
@@ -77,15 +78,24 @@ function playGame () {
 		if (history.length >0) {
 			let lastHistoryReaction = history[history.length-1]
 			console.log ("\n# " + lastHistoryReaction.gameTurn + "\n")
-			console.log ("#Echo: " + JSON.stringify(lastHistoryReaction.action))
-			console.log ("#Text:" + JSON.stringify(lastHistoryReaction.reactionList))
+			console.log ("#Echo: " + kunludi_render.getChoice(lastHistoryReaction.action) + "\n")
+			//console.log ("#Reaction:")
+			kunludi_render.showReactionList(lastHistoryReaction.reactionList)
 		}
 
-    console.log ("\n-Reaction List ----------------------------\n")
-    kunludi_render.showReactionList(kunludi_proxy.getReactionList())
+		let reactionList = kunludi_proxy.getReactionList()
+		if (reactionList.length > 0) {
+			console.log ("\n┌-----Reaction List (turn in process) --------┐\n")
+	    kunludi_render.showReactionList(reactionList)
+			console.log ("\n└------Reaction List (turn in process) --------┘")
+		}
 
-    console.log ("PC State:" + JSON.stringify(kunludi_proxy.getPCState()))
-		console.log ("-Choices ----------------------------\n")
+    console.log ("\nPC State:" + JSON.stringify(kunludi_proxy.getPCState()) + "\n")
+		if (selectedItem != "") {
+			console.log ("\nSelected Item: " + selectedItem + "\n")
+		}
+
+		console.log ("-Player choices ----------------------------\n")
 		// to-do: presskey / menu / choices / typing / links
 
 		let menu = kunludi_proxy.getMenu()
@@ -104,22 +114,30 @@ function playGame () {
 		}
 
 		console.log ("\n ----------------------------\n")
-    // get user action
+
+    // input option (begin) --------------------
     let com
-    let typedCommand = prompt('# ');
-    com = typedCommand.split(" ")
-    if (com.length == 0) continue
-    if (com.length == 0) {
-      console.log ("Wrong command")
-      continue
-    }
+    let typedCommand
+		let comValue = -1
+		for (;;) {
+			typedCommand = prompt('# ');
+			if (kunludi_proxy.getPendingPressKey()) break
+			com = typedCommand.split(" ")
+			if (com.length == 0) continue
+			if (com[0] == "q") {
+	      console.log ("See you" )
+	      return
+	    }
+			// validation
+			console.log ("com: " + JSON.stringify(com))
+			if (isNaN(comValue = parseInt(com[0]))) continue
+			if (comValue < 0 || comValue>=choices.length) continue
+			break
+		}
+		// input option (end) --------------------
 
-    if (com[0] == "q") {
-      console.log ("See you" )
-      return
-    }
+		console.log ("valid comValue: " + JSON.stringify(comValue))
 
-    let comValue = com[0]
 
 		// depending on the "awaiting state"
 
@@ -136,7 +154,14 @@ function playGame () {
 			kunludi_proxy.processChoice (pendingChoice)
 		} else {
 	    console.log ("Echo #" + comValue + ": " + kunludi_render.getChoice(choices[comValue]) )
-	    // run user action (demo)
+			// if item, save it
+			if (choices[comValue].choiceId == "obj1") {
+				selectedItem = kunludi_render.getChoice (choices[comValue])
+			} else {
+				selectedItem = ""
+			}
+
+	    // run user action
 	    kunludi_proxy.processChoice (choices[comValue])
 		} // to-do: if menu
   }

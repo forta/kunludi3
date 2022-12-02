@@ -4,8 +4,10 @@ module.exports = exports = { // commonjs
 //export default {
   getClientTpye:getClientTpye,
   showReactionList:showReactionList,
+  showMenu:showMenu,
   showChoiceList:showChoiceList,
   getChoice:getChoice,
+  showMsg:showMsg,
   showReaction:showReaction,
   replaceCR:replaceCR
 
@@ -21,15 +23,29 @@ function showReactionList(reactionList) {
   }
 }
 
-function showReaction(reaction) {
-  if (reaction.i8n.es.txt != "") {
-      console.log (reaction.i8n.es.txt)
-  } else {
-    console.log ("# " + r + ": " + JSON.stringify(reaction))
-  }
+function showMsg(msg) {
 
+  if (msg.i8n.es.txt != "") {
+    console.log (replaceCR(msg.i8n.es.txt))
+  } else {
+    console.log ("msg: " + JSON.stringify(msg))
+  }
 }
 
+function showReaction(reaction) {
+  if (reaction.i8n.es.txt != "") {
+      console.log ("+ " + replaceCR(reaction.i8n.es.txt))
+  } else {
+    console.log ("reaction: " + JSON.stringify(reaction))
+  }
+}
+
+function showMenu(menu) {
+  console.log ("Menu")
+  for (let m=0; m<menu.length;m++) {
+      console.log ("\t>" + m + ": " + JSON.stringify(menu[m]))
+  }
+}
 
 function showChoiceList(choiceList) {
   // Grupos: choiceId": top, directActions, directionGroup, itemGroup (itemGroup: here, carrying)
@@ -79,14 +95,16 @@ function showChoiceList(choiceList) {
 
 function getChoice(choice) {
   if (choice.i8n.es.txt != "") {
-    return choice.i8n.es.txt
+    return replaceCR(choice.i8n.es.txt)
   }
 
   return choice.action.actionId + ": " + JSON.stringify(choice.i8n)
 }
 
 function replaceCR(msgIn) {
-  let msgOut = msgIn
+  let regex = /<br\s*[\/]?>/gi;
+  return msgIn.replace(regex, "\n");
 
-  return msgOut + "++++++++++"
+  // ES12+: return msgIn.replace("<br/>", "\n")
+
 }

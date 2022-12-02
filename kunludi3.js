@@ -174,7 +174,7 @@ function mainLoop () {
 
 	for (;;) {
 
-		console.log ("stack: " + JSON.stringify(stack))
+		//console.log ("stack: " + JSON.stringify(stack))
 
 		// input
 		let typedCommand = prompt('# ');

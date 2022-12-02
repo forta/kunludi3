@@ -61,6 +61,43 @@ function setKunludiProxi(kunludi_proxyIn) {
   kunludi_proxy = kunludi_proxyIn
 }
 
+
+// https://docs.replit.com/tutorials/predictive-text-engine
+function inputText (awaitingMode, menu, choices) {
+	let returnObject =  {typedCommand: "", value:0, com:[]}
+
+	for (;;) {
+		returnObject.typedCommand = prompt('# ');
+		returnObject.com = returnObject.typedCommand.split(" ")
+		if (awaitingMode <2 ) { // free string(1) or press key (1)
+			return returnObject
+		}
+		returnObject.value = -1
+		if (returnObject.com.length == 0) return returnObject
+		// meta command "q"
+		if (returnObject.com[0] == "q") {
+			console.log ("See you" )
+			return returnObject
+		}
+
+		// validation
+		let value
+		console.log ("returnObject.com: " + JSON.stringify(returnObject.com))
+		value = parseInt(returnObject.com[0])
+		if (isNaN(value)) continue
+
+		if (awaitingMode == 2) { // menu
+			if (value < 0 || value>=menu.length) continue
+			returnObject.value = value
+			return returnObject
+		} if (awaitingMode == 3) { // choices
+			if (value < 0 || value>=choices.length) continue
+			returnObject.value = value
+			return returnObject
+		}
+	}
+}
+
 function playGame () {
 
 	let selectedItem = ""
@@ -85,74 +122,63 @@ function playGame () {
 
 		let reactionList = kunludi_proxy.getReactionList()
 		if (reactionList.length > 0) {
-			console.log ("\n┌-----Reaction List (turn in process) --------┐\n")
+			console.log ("\n┌-----Reaction List (turn in process) --------┐")
 	    kunludi_render.showReactionList(reactionList)
-			console.log ("\n└------Reaction List (turn in process) --------┘")
+			console.log ("└------Reaction List (turn in process) --------┘")
 		}
 
-    console.log ("\nPC State:" + JSON.stringify(kunludi_proxy.getPCState()) + "\n")
-		if (selectedItem != "") {
-			console.log ("\nSelected Item: " + selectedItem + "\n")
-		}
+    //console.log ("\nPC State:" + JSON.stringify(kunludi_proxy.getPCState()) + "\n")
 
 		console.log ("-Player choices ----------------------------\n")
 		// to-do: presskey / menu / choices / typing / links
 
 		let menu = kunludi_proxy.getMenu()
 		let choices
+		let awaitingMode // 0: free string; 1: keypress; 2: menu; 3: standard game choices
 
-		if (kunludi_proxy.getPendingPressKey()) {
-			console.log ("Pending Press Key: " + JSON.stringify(kunludi_proxy.getPendingPressKey()))
-		  console.log ("Press Key Message: " + JSON.stringify(kunludi_proxy.getPressKeyMessage()))
+	  if (1 == 2) { // to-do: kunludi_proxy.getPendingFreeString()) {
+		  awaitingMode = 0
+		} else if (kunludi_proxy.getPendingPressKey()) {
+			console.log ("Pulsa tecla")
+		  kunludi_render.showMsg (kunludi_proxy.getPressKeyMessage())
+			awaitingMode = 1
 		} else if (menu.length > 0) {
-			console.log ("Menu: " + JSON.stringify(menu))
-
+			kunludi_render.showMenu()
+			awaitingMode = 2
 		} else {
+			awaitingMode = 3 // standard
 			console.log ("Tus aciones:")
 	    choices = kunludi_proxy.getChoices()
 	    kunludi_render.showChoiceList(choices)
+
+			if (selectedItem != "") {
+				console.log ("\nSelected Item: " + selectedItem + "\n")
+			}
+
 		}
+
+		console.log ("\nAwaiting Mode: " + awaitingMode + "\n")
 
 		console.log ("\n ----------------------------\n")
+    let userCom = inputText (awaitingMode, menu, choices)
+		let com = userCom.com
+		let comValue = userCom.value
+		console.log ("User command: " + JSON.stringify(userCom))
 
-    // input option (begin) --------------------
-    let com
-    let typedCommand
-		let comValue = -1
-		for (;;) {
-			typedCommand = prompt('# ');
-			if (kunludi_proxy.getPendingPressKey()) break
-			com = typedCommand.split(" ")
-			if (com.length == 0) continue
-			if (com[0] == "q") {
-	      console.log ("See you" )
-	      return
-	    }
-			// validation
-			console.log ("com: " + JSON.stringify(com))
-			if (isNaN(comValue = parseInt(com[0]))) continue
-			if (comValue < 0 || comValue>=choices.length) continue
-			break
-		}
-		// input option (end) --------------------
-
-		console.log ("valid comValue: " + JSON.stringify(comValue))
-
-
-		// depending on the "awaiting state"
-
-		if (kunludi_proxy.getPendingPressKey()) {
-			// key pressed
+		if (awaitingMode == 0) { // free string
+			console.log ("Free text typed: " + JSON.stringify(userCom.com))
+			//to-do: kunludi_proxy.sendFreeText(userCom.com)
+		} else if (awaitingMode == 1) { // key pressed
 			console.log ("Key pressed")
 			kunludi_proxy.keyPressed()
-		} else if (menu.length > 0) {
+		} else if (awaitingMode == 2) { // menu
 			let pendingChoice = kunludi_proxy.getPendingChoice()
 			let menuIndex = com[0]
 			pendingChoice.action.option = menu[menuIndex].id
 			pendingChoice.action.msg = menu[menuIndex].msg
 			pendingChoice.action.menu = menu
 			kunludi_proxy.processChoice (pendingChoice)
-		} else {
+		} else { // standard game choice
 	    console.log ("Echo #" + comValue + ": " + kunludi_render.getChoice(choices[comValue]) )
 			// if item, save it
 			if (choices[comValue].choiceId == "obj1") {
@@ -160,9 +186,8 @@ function playGame () {
 			} else {
 				selectedItem = ""
 			}
-
 	    // run user action
 	    kunludi_proxy.processChoice (choices[comValue])
-		} // to-do: if menu
+		}
   }
 }

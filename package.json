@@ -9,7 +9,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "async-autocomplete-cli": "^1.0.0",
+    "http": "0.0.1-security",
     "kl3-crumbs": "^1.0.0",
-    "prompt-sync": "^4.2.0"
+    "prompt-async": "^0.9.9",
+    "prompt-sync": "^4.2.0",
+    "prompt-sync-history": "^1.0.1",
+    "request": "^2.88.2"
   }
 }

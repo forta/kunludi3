@@ -1,4 +1,5 @@
-const prompt = require('prompt-sync')({sigint: true});
+const prompt_async = require("prompt-async");
+
 const kunludi_proxy = require ('./modulos/RunnerProxie.js');
 
 let modName
@@ -10,7 +11,6 @@ let state = {
 	"kl3-loader": {game: {loaded:false} },
 	"kl3-connector": {token:-1}
 }
-
 
 function refreshCommands () {
 		state[modName] = currentMod.getState()
@@ -161,7 +161,7 @@ function inputPreprocessing (com) {
 	return false
 }
 
-function mainLoop () {
+function init() {
 
 	// init
 	modName = "kl3-main"
@@ -171,16 +171,15 @@ function mainLoop () {
 	crumbs.setModName (modName)
 	let com = [""]
 	refreshCommands()
+}
 
-	for (;;) {
+function interaction(typedCommand) {
 
 		//console.log ("stack: " + JSON.stringify(stack))
 
-		// input
-		let typedCommand = prompt('# ');
 		com = typedCommand.split(" ")
 		if (! inputPreprocessing (com)) {
-			continue
+			return
 		}
 
 		if ( (com[0] == "") || (com[0] == "set-context")  || (com[0] == "go-back") || (com[0] == "help")){
@@ -194,7 +193,8 @@ function mainLoop () {
 			processModuleCommand (com)
 		} else {
 			// batch program
-			let batch = ["cc kl3-loader", "ggl", "sg miqueridahermana", "gi", "lg", "..", "cc kl3-game", "play"]
+			let gameId = "tresfuentes" // "miqueridahermana"
+			let batch = ["cc kl3-loader", "ggl", "sg " + gameId, "gi", "lg", "..", "cc kl3-game", "play"]
 
 			for (let p=0; p<batch.length;p++) {
 				let com2 = batch[p].split(" ")
@@ -204,10 +204,47 @@ function mainLoop () {
 					processModuleCommand (com2)
 				}
 			}
-
 		}
+}
 
+async function interaction_async() // Available only with `prompt-async`!
+{
+	// Start the prompt.
+  prompt_async.start();
+  let com
+
+  // if playing exit
+	if (modName == "kl3-game") {
+	  com = await prompt_async.get(["game"]);
+		console.log ("typed command (game):" + JSON.stringify (com))
+
+		// send command to kl3-game
+		processModuleCommand ("game-action " + com.game)
+
+	} else {
+		  com = await prompt_async.get(["command"]);
+			console.log ("typed command (general):" + JSON.stringify (com))
+
+			// reaction
+			interaction (com.command)
+	}
+
+}
+
+// sync version
+async function mainLoop_async()
+{
+	for (;;) {
+    try
+    {
+        await interaction_async();
+    }
+    catch(error)
+    {
+        console.error("An error occurred: ", error);
+    }
 	}
 }
 
-mainLoop()
+init()
+mainLoop_async();

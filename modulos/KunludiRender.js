@@ -41,9 +41,9 @@ function showReaction(reaction) {
 }
 
 function showMenu(menu) {
-  console.log ("Menu")
+  console.log ("Menu:")
   for (let m=0; m<menu.length;m++) {
-      console.log ("\t>" + m + ": " + JSON.stringify(menu[m]))
+      console.log ("\t>" + m + ": " + menu[m].i8n.es.txt)
   }
 }
 

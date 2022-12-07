@@ -13,6 +13,8 @@
 
  */
 
+let offlineMode = false // detailed console.log only when offline game
+
 let reactionList
 let primitives
 

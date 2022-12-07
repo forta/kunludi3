@@ -13,6 +13,8 @@
 
  */
 
+let offlineMode = false // detailed console.log only when offline game
+
 let reactionList
 let primitives
 
@@ -56,7 +58,9 @@ function processAction (action) {
 		return true
 	}
 
-	console.log ("lib action: " +  JSON.stringify (action))
+  if (offlineMode) {
+    console.log ("lib action: " +  JSON.stringify (action))
+  }
 
 	this.reactions[actionIndex].reaction (action)
 
@@ -262,7 +266,9 @@ let initReactions =  function  (reactions, primitives) {
     reaction: function (par_c) {
 
       // reaction kernel: change of location
-      console.log("debug: goto!")
+      if (offlineMode) {
+        console.log("debug: goto!")
+      }
       primitives.PC_SetCurrentLoc(par_c.item1);
       primitives.CA_ShowDesc(par_c.item1);
       return true;

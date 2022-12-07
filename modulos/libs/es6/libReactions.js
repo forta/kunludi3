@@ -13,6 +13,8 @@
 
  */
 
+let offlineMode = false // detailed console.log only when offline game
+
 let reactionList
 let primitives
 
@@ -55,7 +57,9 @@ function processAction (action) {
 		return true
 	}
 
-	console.log ("lib action: " +  JSON.stringify (action))
+  if (offlineMode) {
+    console.log ("lib action: " +  JSON.stringify (action))
+  }
 
 	this.reactions[actionIndex].reaction (action)
 

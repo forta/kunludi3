@@ -10,9 +10,14 @@
 delete require.cache[require.resolve('./modulos/kl3-crumbs/index.js')]
 let crumbs = require ('./modulos/kl3-crumbs/index.js')
 const kunludi_render = require ('./modulos/KunludiRender.js');
-const prompt = require('prompt-sync')({sigint: true});
+const prompt_async = require("prompt-async");
 
 let kunludi_proxy
+
+const awaitingModesArray = ["free string", "keypress", "menu", "standard game choices"]
+
+const kunludi_exporter = require ('./modulos/KunludiExporter.js');
+
 
 // state
 let state = {
@@ -59,135 +64,172 @@ function execCommand(com) {
 
 function setKunludiProxi(kunludi_proxyIn) {
   kunludi_proxy = kunludi_proxyIn
+	kunludi_exporter.setKunludiProxi(kunludi_proxyIn)
 }
 
+function inputText_validation (typedCommand, turnState) {
 
-// https://docs.replit.com/tutorials/predictive-text-engine
-function inputText (awaitingMode, menu, choices) {
-	let returnObject =  {typedCommand: "", value:0, com:[]}
+	let returnObject =  { value:0, com:[]}
 
-	for (;;) {
-		returnObject.typedCommand = prompt('# ');
-		returnObject.com = returnObject.typedCommand.split(" ")
-		if (awaitingMode <2 ) { // free string(1) or press key (1)
-			return returnObject
-		}
-		returnObject.value = -1
-		if (returnObject.com.length == 0) return returnObject
-		// meta command "q"
-		if (returnObject.com[0] == "q") {
-			console.log ("See you" )
-			return returnObject
-		}
-
-		// validation
-		let value
-		console.log ("returnObject.com: " + JSON.stringify(returnObject.com))
-		value = parseInt(returnObject.com[0])
-		if (isNaN(value)) continue
-
-		if (awaitingMode == 2) { // menu
-			if (value < 0 || value>=menu.length) continue
-			returnObject.value = value
-			return returnObject
-		} if (awaitingMode == 3) { // choices
-			if (value < 0 || value>=choices.length) continue
-			returnObject.value = value
-			return returnObject
-		}
+	returnObject.com = returnObject.typedCommand.split(" ")
+	if (turnState.awaitingMode <2 ) { // free string(1) or press key (1)
+		return returnObject
 	}
+	returnObject.value = -1
+	if (returnObject.com.length == 0) return returnObject
+	// meta command "q"
+	if (returnObject.com[0] == "q") {
+		console.log ("See you" )
+		return returnObject
+	}
+
+	// validation
+	let value
+	//console.log ("returnObject.com: " + JSON.stringify(returnObject.com))
+	value = parseInt(returnObject.com[0])
+	if (isNaN(value)) {return returnObject}
+
+	if (turnState.awaitingMode == 2) { // menu
+		if (value < 0 || value>=turnState.menu.length) return returnObject
+		returnObject.value = value
+		return returnObject
+	} if (turnState.awaitingMode == 3) { // choices
+		if (value < 0 || value>=turnState.choices.length) return returnObject
+		returnObject.value = value
+		return returnObject
+	}
+	return returnObject
+
 }
 
-function playGame () {
+async function processInput (usercom, turnState) {
 
-	let selectedItem = ""
-  for (;;) {
+	if (userCom.com == "q") return
 
-		//kunludi_proxy.getGameIsOver()
-		//kunludi_proxy.getCurrentChoice()
-		//kunludi_proxy.getLastAction()
-		//kunludi_proxy.getPlayerList() // not here
+	let com = userCom.com
+	let comValue = userCom.value
+	//console.log ("User command: " + JSON.stringify(userCom))
 
-		let turn = kunludi_proxy.getGameTurn()
-		console.log ("Current turn: " + turn)
-
-		let history = kunludi_proxy.getHistory()
-		if (history.length >0) {
-			let lastHistoryReaction = history[history.length-1]
-			console.log ("\n# " + lastHistoryReaction.gameTurn + "\n")
-			console.log ("#Echo: " + kunludi_render.getChoice(lastHistoryReaction.action) + "\n")
-			//console.log ("#Reaction:")
-			kunludi_render.showReactionList(lastHistoryReaction.reactionList)
-		}
-
-		let reactionList = kunludi_proxy.getReactionList()
-		if (reactionList.length > 0) {
-			console.log ("\n┌-----Reaction List (turn in process) --------┐")
-	    kunludi_render.showReactionList(reactionList)
-			console.log ("└------Reaction List (turn in process) --------┘")
-		}
-
-    //console.log ("\nPC State:" + JSON.stringify(kunludi_proxy.getPCState()) + "\n")
-
-		console.log ("-Player choices ----------------------------\n")
-		// to-do: presskey / menu / choices / typing / links
-
-		let menu = kunludi_proxy.getMenu()
-		let choices
-		let awaitingMode // 0: free string; 1: keypress; 2: menu; 3: standard game choices
-
-	  if (1 == 2) { // to-do: kunludi_proxy.getPendingFreeString()) {
-		  awaitingMode = 0
-		} else if (kunludi_proxy.getPendingPressKey()) {
-			console.log ("Pulsa tecla")
-		  kunludi_render.showMsg (kunludi_proxy.getPressKeyMessage())
-			awaitingMode = 1
-		} else if (menu.length > 0) {
-			kunludi_render.showMenu()
-			awaitingMode = 2
+	if (turnState.awaitingMode == 0) { // free string
+		console.log ("Free text typed: " + JSON.stringify(userCom.com))
+		//to-do: kunludi_proxy.sendFreeText(userCom.com)
+	} else if (turnState.awaitingMode == 1) { // key pressed
+		console.log ("Key pressed")
+		kunludi_proxy.keyPressed()
+	} else if (turnState.awaitingMode == 2) { // menu
+		let pendingChoice = kunludi_proxy.getPendingChoice()
+		let menuIndex = com[0]
+		pendingChoice.action.option = turnState.menu[menuIndex].id
+		pendingChoice.action.msg = turnState.menu[menuIndex].msg
+		pendingChoice.action.menu = turnState.menu
+		kunludi_proxy.processChoice (pendingChoice)
+	} else { // standard game choice
+		console.log ("Echo #" + comValue + ": " + kunludi_render.getChoice(turnState.choices[comValue]) )
+		// if item, save it
+		if (turnState.choices[comValue].choiceId == "obj1") {
+			turnState.selectedItem = kunludi_render.getChoice (turnState.choices[comValue])
 		} else {
-			awaitingMode = 3 // standard
-			console.log ("Tus aciones:")
-	    choices = kunludi_proxy.getChoices()
-	    kunludi_render.showChoiceList(choices)
+			turnState.selectedItem = ""
+		}
+		// run user action
+		kunludi_proxy.processChoice (turnState.choices[comValue])
+	}
 
-			if (selectedItem != "") {
-				console.log ("\nSelected Item: " + selectedItem + "\n")
-			}
 
+}
+
+function getTurnState (turnState) {
+	//kunludi_proxy.getGameIsOver()
+	//kunludi_proxy.getCurrentChoice()
+	//kunludi_proxy.getLastAction()
+	//kunludi_proxy.getPlayerList() // not here
+
+	turnState.turn = kunludi_proxy.getGameTurn()
+	turnState.history = kunludi_proxy.getHistory()
+	if (turnState.history.length >0) {
+		turnState.lastHistoryReaction = turnState.history[turnState.history.length-1]
+	}
+	turnState.reactionList = kunludi_proxy.getReactionList()
+	turnState.menu = kunludi_proxy.getMenu()
+	turnState.awaitingMode = 3 // 0: free string; 1: keypress; 2: menu; 3: standard game choices
+	if (1 == 2) { // to-do: kunludi_proxy.getPendingFreeString()) {
+		turnState.awaitingMode = 0
+	} else if (kunludi_proxy.getPendingPressKey()) {
+		turnState.awaitingMode = 1
+	} else if (turnState.menu.length > 0) {
+		turnState.awaitingMode = 2
+	} else {
+		turnState.awaitingMode = 3 // standard
+		turnState.choices = kunludi_proxy.getChoices()
+	}
+
+}
+
+function showTurnState (turnState) {
+	console.log ("Current turn: " + turnState.turn)
+	if (turnState.history.length >0) {
+		console.log ("\n┌----- Last Reaction --------┐")
+		let lastHistoryReaction = turnState.history[turnState.history.length-1]
+		console.log ("\n# " + lastHistoryReaction.gameTurn + "\n")
+		console.log ("#Echo: " + kunludi_render.getChoice(lastHistoryReaction.action) + "\n")
+		//console.log ("#Reaction:")
+		kunludi_render.showReactionList(lastHistoryReaction.reactionList)
+		console.log ("└------ Last Reaction --------┘")
+	}
+
+	if (turnState.reactionList.length > 0) {
+		console.log ("\n┌----- Reaction in course --------┐")
+		kunludi_render.showReactionList(turnState.reactionList)
+		console.log ("└------ Reaction in course --------┘")
+	}
+
+	//console.log ("\nPC State:" + JSON.stringify(kunludi_proxy.getPCState()) + "\n")
+
+	console.log ("┌-----Player choices ----------------------------┐\n")
+	if (turnState.awaitingMode == 0) {
+		// to-do: input text
+	} else if (turnState.awaitingMode == 1) {
+		console.log ("Pulsa tecla")
+		kunludi_render.showMsg (kunludi_proxy.getPressKeyMessage())
+	} else if (turnState.awaitingMode == 2) {
+		kunludi_render.showMenu(turnState.menu)
+	} else { // turnState.awaitingMode == 3
+		console.log ("Tus aciones:")
+		kunludi_render.showChoiceList(turnState.choices)
+		if (turnState.selectedItem != "") {
+			console.log ("\nSelected Item: " + turnState.selectedItem + "\n")
 		}
 
-		console.log ("\nAwaiting Mode: " + awaitingMode + "\n")
+	}
+	console.log ("└-----Player choices ----------------------------┘")
 
-		console.log ("\n ----------------------------\n")
-    let userCom = inputText (awaitingMode, menu, choices)
-		let com = userCom.com
-		let comValue = userCom.value
-		console.log ("User command: " + JSON.stringify(userCom))
+}
 
-		if (awaitingMode == 0) { // free string
-			console.log ("Free text typed: " + JSON.stringify(userCom.com))
-			//to-do: kunludi_proxy.sendFreeText(userCom.com)
-		} else if (awaitingMode == 1) { // key pressed
-			console.log ("Key pressed")
-			kunludi_proxy.keyPressed()
-		} else if (awaitingMode == 2) { // menu
-			let pendingChoice = kunludi_proxy.getPendingChoice()
-			let menuIndex = com[0]
-			pendingChoice.action.option = menu[menuIndex].id
-			pendingChoice.action.msg = menu[menuIndex].msg
-			pendingChoice.action.menu = menu
-			kunludi_proxy.processChoice (pendingChoice)
-		} else { // standard game choice
-	    console.log ("Echo #" + comValue + ": " + kunludi_render.getChoice(choices[comValue]) )
-			// if item, save it
-			if (choices[comValue].choiceId == "obj1") {
-				selectedItem = kunludi_render.getChoice (choices[comValue])
-			} else {
-				selectedItem = ""
-			}
-	    // run user action
-	    kunludi_proxy.processChoice (choices[comValue])
+async function playGame () {
+
+	let turnState = {
+		turn: -1,
+		selectedItem: "",
+		history: {},
+		awaitingMode: 3
+	}
+
+	getTurnState (turnState)
+	showTurnState (turnState)
+	console.log ("Awaiting Mode: " + awaitingModesArray[turnState.awaitingMode] + "\n")
+
+	// share state before getting Input
+	kunludi_exporter.exportData(turnState)
+
+	/*
+		let userCom = inputText_validation (com.action, turnState)
+		console.log ("userCom:" + JSON.stringify (userCom))
+
+		if (userCom.com[0] == "q") return
+		if (userCom.value < 0) {
+			// reaction
+			processInput(userCom, turnState);
 		}
-  }
+	*/
+
 }

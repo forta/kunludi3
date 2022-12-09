@@ -1,5 +1,14 @@
 /*
   Module: kl3-loader
+
+  set-rol
+  set-datasource
+  get-gamelist
+  show-gamelist
+  set-game
+  get-info
+  load-game
+
 */
 
 //var crumbs = require ('kl3-crumbs') // the multilingual breadcrumbs
@@ -9,10 +18,10 @@ let kunludi_proxy
 
 // state
 let state = {
-   rol:"host", // host or guest
-   ds:"./games", // datasource: directory or URL
-   gamelist:[],
-   game:{id:null,info:null,files:{}}
+   rol: "host", // host or guest
+   ds: "./games", // datasource: directory or URL
+   gamelist: [],
+   game: {id:null,info:null,files:{}}
 }
 
 module.exports = exports = {
@@ -25,6 +34,7 @@ module.exports = exports = {
   // other functions
   setKunludiProxi:setKunludiProxi,
   setRol:setRol, // host (local execution) or guess (remote execution)
+  getRol:getRol,
   setDataSource:setDataSource, // directory or URL
   getGameList:getGameList,
   setGame:setGame,
@@ -86,13 +96,18 @@ function execCommand(com) {
       if (state.rol == "host") {
         console.log ("to-do: try to get " + state.ds + "games.json")
       } else {
-        console.log ("to-do: try to get " + state.ds + "games.json")
+        console.log ("to-do: try to get " + state.ds + "/api/gameList")
       }
       return
     }
 
     state.gamelist = getGameList()
     console.log ("state.gamelist was set")
+
+  } else if (com[0] == "show-gamelist") {
+    for(let index=0; index < state.gamelist.length; index++) {
+      console.log (index + ": " + JSON.stringify (state.gamelist[index]))
+    }
 
   } else if (com[0] == "set-game") {
     if (com[1] == "?") {
@@ -108,8 +123,16 @@ function execCommand(com) {
       console.log ("You first have to get a game list")
     }
 
+    if (state.rol == "guest") {
+      console.log ("About: (to-do from server)")
+      state.game.id = "unknownGameId"
+      console.log ("state.game set to " + state.game.id)
+      state.game.info = setGame (0)
+      return
+    }
+
     let index = 0
-    for(len = state.gamelist.length; index < len; index++) {
+    for(; index < state.gamelist.length; index++) {
         if (state.gamelist[index].id === com[1]) break
     }
     if (index < state.gamelist.length) {
@@ -140,6 +163,13 @@ function execCommand(com) {
     state.game.loaded = true
     state.game.files = {file1: "file1"}
 
+    if (state.rol == "guest") {
+        // to-do
+        console.log ("to-do: link to " + state.game.id)
+        return
+    }
+
+
     let stateStuff = {locale:"es", kernelMessages: []}  //to-do: needed
     stateStuff.games = kunludi_proxy.getGames() //to-do: needed
     kunludi_proxy.setLocale(stateStuff)
@@ -151,7 +181,7 @@ function execCommand(com) {
 
   } else {
 
-    console.log ("No reaction")
+    console.log ("Error running " + com)
   }
 
 }
@@ -163,8 +193,12 @@ function setKunludiProxi(kunludi_proxyIn) {
 }
 
 function setRol(rolIn) {
-  rol = (rolIn == 'guess')? 'guess': 'host'
+  state.rol = (rolIn == 'guess')? 'guess': 'host'
   refreshCrumbs()
+}
+
+function getRol() {
+  return state.rol
 }
 
 function setDataSource(dsIn) {
@@ -175,24 +209,34 @@ function setDataSource(dsIn) {
 
 function getGameList() {
 
+  if (state.rol == "guest") {
+    gameList = []
+    gameList.push ({id:"unknownId", title:"unknownTitle"})
+    return gameList
+  }
+
   kunludi_proxy.loadGames()
   // to-do: locale?
-  let state = {locale:"es", kernelMessages: []}
-  state.games = kunludi_proxy.getGames()
-  kunludi_proxy.setLocale(state)
-  //console.log ("state.games: " + JSON.stringify (state.games))
+  let stateInProxy = {locale:"es", kernelMessages: []}
+  stateInProxy.games = kunludi_proxy.getGames()
+  kunludi_proxy.setLocale(stateInProxy)
+  //console.log ("stateInProxy.games: " + JSON.stringify (stateInProxy.games))
 
   gameList = []
-  for (let i=0; i<state.games.length;i++) {
+  for (let i=0; i<stateInProxy.games.length;i++) {
     let langIndex = 0
     // to-do_ look for about.translation[langIndex].language == local
-    gameList.push ({id:state.games[i].name, title:state.games[i].name})  // ,state.games[i].about[langIndex].title
+    gameList.push ({id:stateInProxy.games[i].name, title:stateInProxy.games[i].name})  // ,state.games[i].about[langIndex].title
   }
   return gameList
 
 }
 
 function setGame(gameIndex) {
+  if (state.rol == "guest") {
+    return {author:"unknown"}
+  }
+
   let gameList = kunludi_proxy.getGames()
   let langIndex = 0
 

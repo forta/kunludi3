@@ -9,7 +9,7 @@ let crumbs
 let stack = []
 let state = {
 	"kl3-loader": {game: {loaded:false} },
-	"kl3-connector": {token:-1}
+	"kl3-connector": {url: "127.0.0.1:3000", enabled: false, token:-1}
 }
 
 function refreshCommands () {
@@ -54,6 +54,8 @@ function refreshCommands () {
 			crumbs.setAliases ("set-datasource", ["sds"])
 		  crumbs.addCommand ("get-gamelist")
 			crumbs.setAliases ("get-gamelist", ["ggl"])
+			crumbs.addCommand ("show-gamelist")
+			crumbs.setAliases ("show-gamelist", ["sgl"])
 
 			if (state[modName].gamelist.length > 0) {
 		  	crumbs.addCommand ("set-game", 1)
@@ -72,11 +74,16 @@ function refreshCommands () {
 			crumbs.addContext ("kl3-files")
 
 		} else if (modName == "kl3-connector") {
-			crumbs.addCommand ("set-connector", 3)
+			crumbs.addCommand ("set-connector", 1)
+			crumbs.addCommand ("show-connector")
+			crumbs.addCommand ("enable-connector")
+			crumbs.addCommand ("disable-connector")
+			/*
 			if (state[modName].token != -1) {
 				crumbs.addCommand ("get-userList")
 				crumbs.addCommand ("chat", 1)
 			}
+			*/
 
 		} else if (modName == "kl3-files") {
 			crumbs.addCommand ("get-savelist")
@@ -118,6 +125,14 @@ function processModuleCommand (com) {
 		// pointer to the main module
 		if ((modName == "kl3-loader")||(modName == "kl3-game")) {
 				currentMod.setKunludiProxi (kunludi_proxy)
+
+				if (modName == "kl3-game") {
+					currentMod.setConnector (state["kl3-connector"])
+					// preparing next turn
+				  currentMod.getTurnState ()
+				  currentMod.showTurnState ()
+				}
+
 		}
 
 
@@ -193,8 +208,11 @@ function interaction(typedCommand) {
 			processModuleCommand (com)
 		} else {
 			// batch program
-			let gameId = "tresfuentes" // "miqueridahermana"
-			let batch = ["cc kl3-loader", "ggl", "sg " + gameId, "gi", "lg", "..", "cc kl3-game", "play"]
+			//let gameId = "tresfuentes" // "miqueridahermana"
+			//let batch = ["cc kl3-loader", "ggl", "sgl", "sg " + gameId, "gi", "lg", "..", "cc kl3-connector", "enable-connector", "show-connector", "..", "cc kl3-game", "play"]
+
+			let gameId = "unknownGameId"
+			let batch = ["cc kl3-loader", "ggl", "sgl", "set-rol guest", "sgl", "sg " + gameId, "gi", "lg", "..", "cc kl3-game" ] //, "play"]
 
 			for (let p=0; p<batch.length;p++) {
 				let com2 = batch[p].split(" ")
@@ -218,8 +236,14 @@ async function interaction_async() // Available only with `prompt-async`!
 	  com = await prompt_async.get(["game"]);
 		console.log ("typed command (game):" + JSON.stringify (com))
 
+		if (com.game == "q") { // the same as ".."
+			interaction ("..")
+			return
+		}
+
 		// send command to kl3-game
-		processModuleCommand ("game-action " + com.game)
+		let gameCommand = "game-action " + com.game
+		processModuleCommand (gameCommand.split(" "))
 
 	} else {
 		  com = await prompt_async.get(["command"]);

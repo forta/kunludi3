@@ -3,7 +3,8 @@
   Description:
 	Commands:
 		play
-
+		game-action
+		abort-game: to-do
 */
 
 //var crumbs = require ('kl3-crumbs') // the multilingual breadcrumbs
@@ -13,11 +14,24 @@ const kunludi_render = require ('./modulos/KunludiRender.js');
 const prompt_async = require("prompt-async");
 
 let kunludi_proxy
+let isHost = false
+// here!!
+// in case of isHost == false, kunludi_proxy is used to run remote commands
+/* in a first step, as a GET request, but after that using kunludi_proxy properly
+*/
 
 const awaitingModesArray = ["free string", "keypress", "menu", "standard game choices"]
 
 const kunludi_exporter = require ('./modulos/KunludiExporter.js');
 
+let turnState = {
+	turn: -1,
+	selectedItem: "",
+	history: {},
+	awaitingMode: 3
+}
+
+let connector = { url: "127.0.0.1", enabled:false}
 
 // state
 let state = {
@@ -32,8 +46,10 @@ module.exports = exports = {
 	execCommand:execCommand,
 
 	// other functions
-	  setKunludiProxi:setKunludiProxi,
-
+  setKunludiProxi:setKunludiProxi,
+	getTurnState:getTurnState,
+	showTurnState:showTurnState,
+	setConnector:setConnector
 }
 
 // crumbs functions -------------------------------------------------
@@ -54,8 +70,36 @@ function execCommand(com) {
 	if (com[0] == "play") {
 			console.log ("The game stats here!")
 			playGame()
+	} else if (com[0] == "game-action") {
+		console.log ("Game action: [" + com + "]")
+
+		// share state before getting Input
+		// kunludi_exporter.exportData(turnState)
+
+		if (com[1] == "") return
+
+		// refresh game state
+		getTurnState ()
+
+		let userCom = inputText_validation (com[1], turnState)
+		console.log ("userCom:" + JSON.stringify (userCom))
+
+		if (userCom.com[0] == "q") return
+		if (userCom.value < 0) return
+
+		// reaction
+		processInput(userCom, turnState);
+
+		// preparing next turn
+		getTurnState ()
+		showTurnState ()
+		console.log ("Awaiting Mode: " + awaitingModesArray[turnState.awaitingMode] + "\n")
+
+		// first share
+		kunludi_exporter.exportData(turnState)
+
 	} else {
-		console.log ("Error trying to execute [" + com + "] on module " + crumbs.getModName())
+		console.log ("Error trying to execute... [" + com + "] on module " + crumbs.getModName())
 	}
 
 }
@@ -70,7 +114,7 @@ function setKunludiProxi(kunludi_proxyIn) {
 function inputText_validation (typedCommand, turnState) {
 
 	let returnObject =  { value:0, com:[]}
-
+	returnObject.typedCommand = typedCommand
 	returnObject.com = returnObject.typedCommand.split(" ")
 	if (turnState.awaitingMode <2 ) { // free string(1) or press key (1)
 		return returnObject
@@ -102,7 +146,7 @@ function inputText_validation (typedCommand, turnState) {
 
 }
 
-async function processInput (usercom, turnState) {
+async function processInput (userCom, turnState) {
 
 	if (userCom.com == "q") return
 
@@ -118,7 +162,15 @@ async function processInput (usercom, turnState) {
 		kunludi_proxy.keyPressed()
 	} else if (turnState.awaitingMode == 2) { // menu
 		let pendingChoice = kunludi_proxy.getPendingChoice()
-		let menuIndex = com[0]
+
+		let menuIndex = parseInt(com[0])
+		if (isNaN(menuIndex)) {
+			console.log ("Not a value")
+		  return
+		} else if ((menuIndex<0) || (menuIndex>=turnState.menu.length)) {
+			console.log ("Wrong value")
+		  return
+		}
 		pendingChoice.action.option = turnState.menu[menuIndex].id
 		pendingChoice.action.msg = turnState.menu[menuIndex].msg
 		pendingChoice.action.menu = turnState.menu
@@ -138,7 +190,20 @@ async function processInput (usercom, turnState) {
 
 }
 
-function getTurnState (turnState) {
+function getTurnState () {
+	if (!isHost) { // guest
+		// take data from the server
+		let turnStateDemo = kunludi_exporter.importData()
+		turnState = JSON.parse(turnStateDemo)
+		if (turnState.error == -1) {
+				console.log ("Error importing data")
+				return
+		}
+		console.log ("Data correctly imported")
+		showTurnState()
+		return
+	}
+
 	//kunludi_proxy.getGameIsOver()
 	//kunludi_proxy.getCurrentChoice()
 	//kunludi_proxy.getLastAction()
@@ -165,7 +230,7 @@ function getTurnState (turnState) {
 
 }
 
-function showTurnState (turnState) {
+function showTurnState () {
 	console.log ("Current turn: " + turnState.turn)
 	if (turnState.history.length >0) {
 		console.log ("\n┌----- Last Reaction --------┐")
@@ -207,29 +272,15 @@ function showTurnState (turnState) {
 
 async function playGame () {
 
-	let turnState = {
-		turn: -1,
-		selectedItem: "",
-		history: {},
-		awaitingMode: 3
-	}
-
-	getTurnState (turnState)
-	showTurnState (turnState)
+	getTurnState ()
+	showTurnState ()
 	console.log ("Awaiting Mode: " + awaitingModesArray[turnState.awaitingMode] + "\n")
 
-	// share state before getting Input
+	// first share
 	kunludi_exporter.exportData(turnState)
 
-	/*
-		let userCom = inputText_validation (com.action, turnState)
-		console.log ("userCom:" + JSON.stringify (userCom))
+}
 
-		if (userCom.com[0] == "q") return
-		if (userCom.value < 0) {
-			// reaction
-			processInput(userCom, turnState);
-		}
-	*/
-
+function setConnector (connectorIn) {
+	kunludi_exporter.setConnector (connectorIn)
 }

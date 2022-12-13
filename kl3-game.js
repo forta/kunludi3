@@ -7,6 +7,7 @@
 		abort-game: to-do
 */
 
+
 //var crumbs = require ('kl3-crumbs') // the multilingual breadcrumbs
 delete require.cache[require.resolve('./modulos/kl3-crumbs/index.js')]
 let crumbs = require ('./modulos/kl3-crumbs/index.js')
@@ -14,15 +15,19 @@ const kunludi_render = require ('./modulos/KunludiRender.js');
 const prompt_async = require("prompt-async");
 
 let kunludi_proxy
-let isHost = false
-// here!!
-// in case of isHost == false, kunludi_proxy is used to run remote commands
-/* in a first step, as a GET request, but after that using kunludi_proxy properly
+let isHost = true //  to-do: a internal GET request, but later kunludi_proxy will be used
+/*
+to-do: every second check wheter is an external action to be executed
 */
+
+let backgroundPtr
+
+backgroundPtr = setInterval(checkExternalUserActions,5000);
 
 const awaitingModesArray = ["free string", "keypress", "menu", "standard game choices"]
 
 const kunludi_exporter = require ('./modulos/KunludiExporter.js');
+
 
 let turnState = {
 	turn: -1,
@@ -49,7 +54,8 @@ module.exports = exports = {
   setKunludiProxi:setKunludiProxi,
 	getTurnState:getTurnState,
 	showTurnState:showTurnState,
-	setConnector:setConnector
+	setConnector:setConnector,
+	setRol:setRol
 }
 
 // crumbs functions -------------------------------------------------
@@ -85,6 +91,7 @@ function execCommand(com) {
 		console.log ("userCom:" + JSON.stringify (userCom))
 
 		if (userCom.com[0] == "q") return
+
 		if (userCom.value < 0) return
 
 		// reaction
@@ -94,8 +101,6 @@ function execCommand(com) {
 		getTurnState ()
 		showTurnState ()
 		console.log ("Awaiting Mode: " + awaitingModesArray[turnState.awaitingMode] + "\n")
-
-		// first share
 		kunludi_exporter.exportData(turnState)
 
 	} else {
@@ -190,16 +195,34 @@ async function processInput (userCom, turnState) {
 
 }
 
-function getTurnState () {
+function sleep(ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
+async function getTurnState () {
 	if (!isHost) { // guest
+
 		// take data from the server
-		let turnStateDemo = kunludi_exporter.importData()
-		turnState = JSON.parse(turnStateDemo)
+		kunludi_exporter.importData()
+
+		console.log("Starting delay");
+	  await sleep(3000);
+	  console.log("End of 3s delay");
+		turnState = kunludi_exporter.getTurnState()
+
+		//console.log ("turnState: " + JSON.stringify (turnState))
+
 		if (turnState.error == -1) {
 				console.log ("Error importing data")
 				return
 		}
+
 		console.log ("Data correctly imported")
+
+		console.log ("turnState.turn: " + turnState.turn)
+
 		showTurnState()
 		return
 	}
@@ -264,10 +287,8 @@ function showTurnState () {
 		if (turnState.selectedItem != "") {
 			console.log ("\nSelected Item: " + turnState.selectedItem + "\n")
 		}
-
 	}
 	console.log ("└-----Player choices ----------------------------┘")
-
 }
 
 async function playGame () {
@@ -275,12 +296,45 @@ async function playGame () {
 	getTurnState ()
 	showTurnState ()
 	console.log ("Awaiting Mode: " + awaitingModesArray[turnState.awaitingMode] + "\n")
-
-	// first share
 	kunludi_exporter.exportData(turnState)
 
 }
 
 function setConnector (connectorIn) {
 	kunludi_exporter.setConnector (connectorIn)
+}
+
+function setRol (rolIn) {
+	isHost = 	(rolIn == "host")
+}
+
+
+function checkExternalUserActions() {
+  // clearInterval(punteroBackground);
+
+	kunludi_exporter.importNextUserAction()
+	let nextUserAction = kunludi_exporter.getNextUserAction()
+	if (typeof nextUserAction == "undefined") return
+	if (typeof nextUserAction.arrayEmpty == "number") return
+	if (nextUserAction.error ==-1) return
+
+	console.log ("*(begin)********* Processing external user action:" + JSON.stringify (nextUserAction))
+
+  // here! to-do: execute action and refresh screen
+
+	// reaction
+	let userCom = {com: nextUserAction.action.toString(), value: nextUserAction.action }
+
+	processInput(userCom, turnState);
+
+	// preparing next turn
+	getTurnState ()
+	showTurnState ()
+	console.log ("Awaiting Mode: " + awaitingModesArray[turnState.awaitingMode] + "\n")
+	kunludi_exporter.exportData(turnState)
+
+	console.log ("*(end)********* Processing external user action:" + JSON.stringify (nextUserAction))
+
+
+
 }

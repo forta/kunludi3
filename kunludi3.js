@@ -8,7 +8,7 @@ let currentMod
 let crumbs
 let stack = []
 let state = {
-	"kl3-loader": {game: {loaded:false} },
+	"kl3-loader": {rol:"host", game: {loaded:false} },
 	"kl3-connector": {url: "127.0.0.1:3000", enabled: false, token:-1}
 }
 
@@ -35,7 +35,7 @@ function refreshCommands () {
 		crumbs.addCommand ("help")
 		crumbs.setAliases ("help", ["h", "?"])
 
-		crumbs.addCommand ("exec")
+		crumbs.addCommand ("exec", 1)
 		crumbs.setAliases ("exec", ["x"])
 
 		if (modName == "kl3-main") {
@@ -128,6 +128,7 @@ function processModuleCommand (com) {
 
 				if (modName == "kl3-game") {
 					currentMod.setConnector (state["kl3-connector"])
+					currentMod.setRol (state["kl3-loader"].rol)
 					// preparing next turn
 				  currentMod.getTurnState ()
 				  currentMod.showTurnState ()
@@ -208,11 +209,15 @@ function interaction(typedCommand) {
 			processModuleCommand (com)
 		} else {
 			// batch program
-			//let gameId = "tresfuentes" // "miqueridahermana"
-			//let batch = ["cc kl3-loader", "ggl", "sgl", "sg " + gameId, "gi", "lg", "..", "cc kl3-connector", "enable-connector", "show-connector", "..", "cc kl3-game", "play"]
-
-			let gameId = "unknownGameId"
-			let batch = ["cc kl3-loader", "ggl", "sgl", "set-rol guest", "sgl", "sg " + gameId, "gi", "lg", "..", "cc kl3-game" ] //, "play"]
+			let gameId
+			let batch
+			if (com[1] == "host") {
+				gameId = "tresfuentes" // "miqueridahermana"
+				batch = ["cc kl3-loader", "ggl", "sgl", "sg " + gameId, "gi", "lg", "..", "cc kl3-connector", "enable-connector", "show-connector", "..", "cc kl3-game", "play"]
+			} else { // guest
+				gameId = "unknownGameId"
+				batch = ["cc kl3-loader", "ggl", "sgl", "set-rol guest", "sgl", "sg " + gameId, "gi", "lg", "..", "cc kl3-game" ] //, "play"]
+			}
 
 			for (let p=0; p<batch.length;p++) {
 				let com2 = batch[p].split(" ")

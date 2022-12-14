@@ -4,18 +4,21 @@ let connector = {url: "127.0.0.1:3000", enabled: false} // enabled means "export
 let kunludi_proxy
 let turnState
 let nextUserAction
+let newData = false
 
 module.exports = exports = { // commonjs
-//export default {
+  //export default {
   setKunludiProxi: setKunludiProxi,
   setConnector: setConnector,
   getTurnState: getTurnState,
   getNextUserAction: getNextUserAction,
+  sendGameAction: sendGameAction,
 
-  // API
+  // server API
   exportData: exportData,
   importData: importData,
-  importNextUserAction: importNextUserAction
+  importNextUserAction: importNextUserAction,
+  isNewData: isNewData
 }
 
 function setKunludiProxi(kunludi_proxyIn) {
@@ -23,6 +26,7 @@ function setKunludiProxi(kunludi_proxyIn) {
 }
 
 function getTurnState() {
+  newData = false
   return turnState
 }
 
@@ -35,6 +39,9 @@ function getNextUserAction() {
   return nextUserAction
 }
 
+function isNewData() {
+  return newData
+}
 
 // API -------------------------------------------------------------
 
@@ -68,7 +75,6 @@ async function exportData(turnState) {
   console.log ("exporting data")
 
   exportData_Internal(turnState).then ((result) => {
-
     //console.log ("******************************** ExportData result: " +  JSON.stringify(result))
   })
   .catch(e => {
@@ -76,14 +82,16 @@ async function exportData(turnState) {
   });
 }
 
+// ----------------------------
 
-async function importData_Internal() {
+async function importData_Internal(userData) {
 
   let url = "http://" + connector.url + "/api/gameState"
 
 	let options = {
 		method: 'get',
 		json: true,
+    body: userData,
 		url: url,
 		headers: { } // Specify headers, if any
 	}
@@ -99,13 +107,12 @@ async function importData_Internal() {
 
 }
 
-async function importData() {
+async function importData(userData) {
 
-  console.log ("importing data")
-
-  await importDataInternal().then ((result) => {
-    //console.log ("******************************** ImportData result: ok")
+  await importData_Internal(userData).then ((result) => {
     turnState = result
+    //console.log ("******************************** ImportData result: turn: " + turnState.turn)
+    newData = true // data ready
   })
   .catch(e => {
     //console.error('*************************************** Error on launching importData: ' +  e)
@@ -113,6 +120,7 @@ async function importData() {
   });
 }
 
+// ----------------------------
 
 async function importNextUserAction_Internal() {
 
@@ -153,3 +161,44 @@ async function importNextUserAction() {
     nextUserAction = {error:-1}
   });
 }
+
+// ----------------------------
+
+
+async function sendGameAction_Internal(userAction) {
+
+  let url = "http://" + connector.url + "/api/userAction"
+
+	let options = {
+    method: 'post',
+		body: userAction,
+		json: true,
+		url: url,
+		headers: { } // Specify headers, if any
+	}
+
+	return await new Promise(function (resolve, reject) {
+		request(options, function (err, res, body) {
+		  if (err) {
+				return reject(err)
+		  }
+			resolve (body)
+		});
+  })
+
+}
+
+async function sendGameAction(userAction) {
+
+  //console.log ("importing user actions")
+
+  await sendGameAction_Internal(userAction).then ((result) => {
+    console.log ("******************************** sendGameAction result: ok")
+
+  })
+  .catch(e => {
+    console.error('*************************************** Error on launching sendGameAction: ' +  e)
+  });
+}
+
+// ----------------------------

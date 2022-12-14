@@ -14,20 +14,12 @@ let crumbs = require ('./modulos/kl3-crumbs/index.js')
 const kunludi_render = require ('./modulos/KunludiRender.js');
 const prompt_async = require("prompt-async");
 
+
 let kunludi_proxy
 let isHost = true //  to-do: a internal GET request, but later kunludi_proxy will be used
 /*
 to-do: every second check wheter is an external action to be executed
 */
-
-let backgroundPtr
-
-backgroundPtr = setInterval(checkExternalUserActions,5000);
-
-const awaitingModesArray = ["free string", "keypress", "menu", "standard game choices"]
-
-const kunludi_exporter = require ('./modulos/KunludiExporter.js');
-
 
 let turnState = {
 	turn: -1,
@@ -35,6 +27,15 @@ let turnState = {
 	history: {},
 	awaitingMode: 3
 }
+
+let checkExternalUserActions_Interval = setInterval(checkExternalUserActions,100);
+let newData = false
+let showNewData_Interval = setInterval(showNewData, 100);
+
+const awaitingModesArray = ["free string", "keypress", "menu", "standard game choices"]
+
+const kunludi_exporter = require ('./modulos/KunludiExporter.js');
+
 
 let connector = { url: "127.0.0.1", enabled:false}
 
@@ -79,9 +80,6 @@ function execCommand(com) {
 	} else if (com[0] == "game-action") {
 		console.log ("Game action: [" + com + "]")
 
-		// share state before getting Input
-		// kunludi_exporter.exportData(turnState)
-
 		if (com[1] == "") return
 
 		// refresh game state
@@ -91,18 +89,17 @@ function execCommand(com) {
 		console.log ("userCom:" + JSON.stringify (userCom))
 
 		if (userCom.com[0] == "q") return
-
 		if (userCom.value < 0) return
+
+		if (!isHost) { // guest
+			console.log ("Sending action to server")
+			kunludi_exporter.sendGameAction({user:"guest", turn:turnState.turn, action: userCom.value})
+			return
+		}
 
 		// reaction
 		processInput(userCom, turnState);
-
-		// preparing next turn
-		getTurnState ()
-		showTurnState ()
-		console.log ("Awaiting Mode: " + awaitingModesArray[turnState.awaitingMode] + "\n")
-		kunludi_exporter.exportData(turnState)
-
+		afterProcessInput()
 	} else {
 		console.log ("Error trying to execute... [" + com + "] on module " + crumbs.getModName())
 	}
@@ -110,6 +107,19 @@ function execCommand(com) {
 }
 
 // Other functions -------------------------------------------------
+
+function afterProcessInput() {
+	getTurnState ()
+
+	console.log ("turnState.turn: " + turnState.turn)
+	showTurnState ()
+	console.log ("Awaiting Mode: " + awaitingModesArray[turnState.awaitingMode] + "\n")
+	newData = false
+	if (isHost) {
+		kunludi_exporter.exportData(turnState)
+	}
+
+}
 
 function setKunludiProxi(kunludi_proxyIn) {
   kunludi_proxy = kunludi_proxyIn
@@ -203,27 +213,6 @@ function sleep(ms) {
 
 async function getTurnState () {
 	if (!isHost) { // guest
-
-		// take data from the server
-		kunludi_exporter.importData()
-
-		console.log("Starting delay");
-	  await sleep(3000);
-	  console.log("End of 3s delay");
-		turnState = kunludi_exporter.getTurnState()
-
-		//console.log ("turnState: " + JSON.stringify (turnState))
-
-		if (turnState.error == -1) {
-				console.log ("Error importing data")
-				return
-		}
-
-		console.log ("Data correctly imported")
-
-		console.log ("turnState.turn: " + turnState.turn)
-
-		showTurnState()
 		return
 	}
 
@@ -254,6 +243,8 @@ async function getTurnState () {
 }
 
 function showTurnState () {
+	if (turnState.turn<0) return
+
 	console.log ("Current turn: " + turnState.turn)
 	if (turnState.history.length >0) {
 		console.log ("\n┌----- Last Reaction --------┐")
@@ -282,7 +273,6 @@ function showTurnState () {
 	} else if (turnState.awaitingMode == 2) {
 		kunludi_render.showMenu(turnState.menu)
 	} else { // turnState.awaitingMode == 3
-		console.log ("Tus aciones:")
 		kunludi_render.showChoiceList(turnState.choices)
 		if (turnState.selectedItem != "") {
 			console.log ("\nSelected Item: " + turnState.selectedItem + "\n")
@@ -296,6 +286,7 @@ async function playGame () {
 	getTurnState ()
 	showTurnState ()
 	console.log ("Awaiting Mode: " + awaitingModesArray[turnState.awaitingMode] + "\n")
+	// first export
 	kunludi_exporter.exportData(turnState)
 
 }
@@ -308,9 +299,12 @@ function setRol (rolIn) {
 	isHost = 	(rolIn == "host")
 }
 
-
 function checkExternalUserActions() {
-  // clearInterval(punteroBackground);
+
+	if (!isHost) { // guest
+		return
+	}
+  // clearInterval(checkExternalUserActions_Interval);
 
 	kunludi_exporter.importNextUserAction()
 	let nextUserAction = kunludi_exporter.getNextUserAction()
@@ -318,23 +312,51 @@ function checkExternalUserActions() {
 	if (typeof nextUserAction.arrayEmpty == "number") return
 	if (nextUserAction.error ==-1) return
 
-	console.log ("*(begin)********* Processing external user action:" + JSON.stringify (nextUserAction))
-
-  // here! to-do: execute action and refresh screen
-
+	console.log ("***************** Processing external user action:" + JSON.stringify (nextUserAction))
 	// reaction
 	let userCom = {com: nextUserAction.action.toString(), value: nextUserAction.action }
 
 	processInput(userCom, turnState);
-
-	// preparing next turn
 	getTurnState ()
-	showTurnState ()
-	console.log ("Awaiting Mode: " + awaitingModesArray[turnState.awaitingMode] + "\n")
-	kunludi_exporter.exportData(turnState)
+	newData = true
+}
 
-	console.log ("*(end)********* Processing external user action:" + JSON.stringify (nextUserAction))
+function showNewData() {
 
+	// clearInterval(showNewData_Interval);
+	if (isHost) {
+		if (newData) {
+			afterProcessInput()
+		}
+		return
+	}
 
+	if (typeof turnState == "undefined" || typeof turnState.turn == "undefined") { // first load
+		turnState = {turn: -1}
+		console.log ("initial request import data")
+		kunludi_exporter.importData({user:"guest", turn: turnState.turn+1 })
+		return
+	}
+
+	if (kunludi_exporter.isNewData()) {
+		turn = turnState.turn
+		turnState = kunludi_exporter.getTurnState()
+		// validation new data
+		//console.log ("Cadidate data imported.  Old turn: " + turn + " . Loaded turn: " + turnState.turn)
+		if (turnState.turn <= turn) {
+			return
+		}
+		console.log ("Right data imported. Old turn: " + turn + " . Loaded turn: " + turnState.turn)
+		//console.log ("turnState: " + JSON.stringify (turnState))
+		if (turnState.error == -1) {
+				console.log ("Error importing data")
+				return
+		}
+		afterProcessInput()
+	} else {
+		// guest
+	 	//console.log ("request import data")
+		kunludi_exporter.importData({user:"guest", turn: turnState.turn+1 })
+	}
 
 }

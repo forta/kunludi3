@@ -41,47 +41,52 @@ function showReaction(reaction) {
 }
 
 function showMenu(menu) {
-  console.log ("Menu:")
+  let outStr = "Menu:\n| "
   for (let m=0; m<menu.length;m++) {
-      console.log ("\t>" + m + ": " + menu[m].i8n.es.txt)
+      outStr += m + ": " + menu[m].i8n.es.txt +  " | "
   }
+  console.log (outStr)
+
 }
 
 function showChoiceList(choiceList) {
   // Grupos: choiceId": top, directActions, directionGroup, itemGroup (itemGroup: here, carrying)
 
   // acciones directas: "choiceId":"action0
-  console.log ("Acciones Directas")
+  let outStr = "Acciones Directas:\n| "
   for (let c=0; c<choiceList.length;c++) {
     if (choiceList[c].choiceId == "action0") {
-      console.log ("\t>" + c + ": " + getChoice(choiceList[c]))
+      outStr += c + ": " + getChoice(choiceList[c]) + " | "
     }
   }
+  console.log (outStr)
 
   // direcciones directas:  "choiceId":"dir1"
-  console.log ("Direcciones")
+  outStr = "Direcciones:\n| "
   for (let c=0; c<choiceList.length;c++) {
     if (choiceList[c].choiceId == "dir1") {
-      console.log ("\t>" + c + ": " + getChoice(choiceList[c]))
+      outStr += c + ": " + getChoice(choiceList[c])  + " | "
     }
   }
-
+  console.log (outStr)
 
   // items
-  console.log ("Items")
+  outStr = "Items:\n| "
   for (let c=0; c<choiceList.length;c++) {
     if (choiceList[c].choiceId == "obj1") {
-      console.log ("\t>" + c + ": " + getChoice(choiceList[c]))
+      outStr += c + ": " + getChoice(choiceList[c]) + " | "
     }
   }
+  console.log (outStr)
 
   // on selected item
-  console.log ("On selected item")
+  outStr = "On selected item:\n| "
   for (let c=0; c<choiceList.length;c++) {
     if ((choiceList[c].choiceId == "action") || (choiceList[c].choiceId == "action2")) {
-      console.log ("\t>" + c + ": " + getChoice(choiceList[c]))
+        outStr += c + ": " + getChoice(choiceList[c])  + " | "
     }
   }
+  console.log (outStr)
 
   //resto
   /*

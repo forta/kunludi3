@@ -20,6 +20,7 @@ module.exports = exports = { //commonjs
 	actionIsEnabled:actionIsEnabled,
 	getTargetAndLocked:getTargetAndLocked,
 	updateChoices:updateChoices,
+	updateChoicesWhenItemSelected:updateChoicesWhenItemSelected,
 	getCurrentChoice:getCurrentChoice,
 	getGameTurn:getGameTurn,
 	getEnableChoices:getEnableChoices,
@@ -31,7 +32,7 @@ module.exports = exports = { //commonjs
 	expandDynReactions:expandDynReactions,
 
 	// vue2?:
-  PCState: {profile: {indexPC:0, loc:2}}, // loc:2?
+  PCState: {profile: {indexPC:0, loc:2, item1:undefined} }, // loc:2?
 	choices: [],
 	world: []
 
@@ -447,9 +448,24 @@ function processChoice (newChoice, optionMsg) {
 
 	if (choice.choiceId == 'top') choice.action = undefined
 
-	if (choice.choiceId == 'obj1') choice.parent = previousChoice
+	if (choice.choiceId == 'obj1') {
+		choice.parent = previousChoice
+		this.PCState.profile.item1 = choice.item1
+	} else {
+		this.PCState.profile.item1 = undefined
+	}
 
-	if (choice.isLeafe) { // execution
+	// execution (choice.isLeafe or item selected)
+	if ( (choice.isLeafe)
+//			|| (choice.choiceId == 'obj1')
+		) {
+
+		// to-do: dead code by now
+    if (choice.choiceId == 'obj1') {
+			// to-do: no reactionList, just add new actions on selected item1
+			this.updateChoicesWhenItemSelected(this.PCState.profile.item1)
+			return
+		}
 
 		// saving its previous location
 		var locBefore
@@ -540,7 +556,6 @@ function processChoice (newChoice, optionMsg) {
 		}
 	}
 
-	// to see again all the actions for the item
 	if (choice.choiceId == 'action') choice = previousChoice
 
 	this.updateChoices()
@@ -1035,58 +1050,55 @@ function updateChoices(showAll) {
 	}
 
 	if (choice.choiceId == 'obj1') {
+		this.updateChoicesWhenItemSelected(choice.item1) // former version
+	  // this.updateChoicesWhenItemSelected(this.PCState.profile.item1) // new version
+	}
 
-		// if the item has items inside (container), show them
-		for (var itemInside=0; itemInside< this.world.items.length; itemInside++) {
-			if (itemInside == choice.item1) continue; // item1 into itself
-			if (this.world.items[itemInside].type == 'loc') continue // location into item1
+}
 
-			var itemInsideLoc = arrayObjectIndexOf (this.world.items, "id",this.world.items[itemInside].loc)
+function updateChoicesWhenItemSelected(item1) {
+	console.log ("obj1 SELECTED: " + item1)
 
-			if (itemInsideLoc != choice.item1)  continue // itemInsideLoc must be the container (item1)
+	// if the item has items inside (container), show them
+	for (var itemInside=0; itemInside< this.world.items.length; itemInside++) {
+		if (itemInside == item1) continue; // item1 into itself
+		if (this.world.items[itemInside].type == 'loc') continue // location into item1
 
-			// finally the container must be carried or here
-			if ( (this.world.items[itemInsideLoc].loc != this.world.items[this.PCState.profile.indexPC].id) &&  // not carried
-				 (this.world.items[itemInsideLoc].loc != this.world.items[this.PCState.profile.indexPC].loc) )  // not here
-				continue
+		var itemInsideLoc = arrayObjectIndexOf (this.world.items, "id",this.world.items[itemInside].loc)
 
-			this.choices.push ({choiceId:'obj1', item1: itemInside, item1Id: this.world.items[itemInside].id, parent:"inside", parentItem: choice.item1});
-		}
+		if (itemInsideLoc != item1)  continue // itemInsideLoc must be the container (item1)
 
-		// actions on the item
-		for (var i=0; i< this.world.actions.length; i++) {
-			var actionId = this.world.actions[i].id
-			if (this.world.actions[i].numpar == 0) continue;
+		// finally the container must be carried or here
+		if ( (this.world.items[itemInsideLoc].loc != this.world.items[this.PCState.profile.indexPC].id) &&  // not carried
+			 (this.world.items[itemInsideLoc].loc != this.world.items[this.PCState.profile.indexPC].loc) )  // not here
+			continue
 
-			if (this.actionIsEnabled  (actionId, choice.item1)) { 		// obj1 + action
-				this.choices.push ({choiceId:'action', isLeafe:true, parent:"obj1", action: { item1: choice.item1, item1Id: this.world.items[choice.item1].id, actionId: actionId }})
-			} else {
-				var j=0
-				for (; j< this.world.items.length; j++) {
-					if (j == choice.item1) continue; // item1 on item1
-					if (j == this.PCState.profile.indexPC) continue; // self action with item1
+		this.choices.push ({choiceId:'obj1', item1: itemInside, item1Id: this.world.items[itemInside].id, parent:"inside", parentItem: item1});
+	}
 
-					// j must be carried or here
-					if ( (this.world.items[j].loc != this.world.items[this.PCState.profile.indexPC].id) &&  // not carried
-						 (this.world.items[j].loc != this.world.items[this.PCState.profile.indexPC].loc) )  // not here
-					continue;
+	// actions on the item
+	for (var i=0; i< this.world.actions.length; i++) {
+		var actionId = this.world.actions[i].id
+		if (this.world.actions[i].numpar == 0) continue;
 
-					if (this.actionIsEnabled  (actionId, choice.item1, j)) { // obj1 + action + obj2
-						this.choices.push ({choiceId:'action2', isLeafe:true, parent:"action2", action: { item1: choice.item1, item1Id: this.world.items[choice.item1].id, actionId: actionId, item2:j, item2Id: this.world.items[j].id }})
-					}
+		if (this.actionIsEnabled  (actionId, item1)) { 		// obj1 + action
+			this.choices.push ({choiceId:'action', isLeafe:true, parent:"obj1", action: { item1: item1, item1Id: this.world.items[item1].id, actionId: actionId }})
+		} else {
+			var j=0
+			for (; j< this.world.items.length; j++) {
+				if (j == item1) continue; // item1 on item1
+				if (j == this.PCState.profile.indexPC) continue; // self action with item1
+
+				// j must be carried or here
+				if ( (this.world.items[j].loc != this.world.items[this.PCState.profile.indexPC].id) &&  // not carried
+					 (this.world.items[j].loc != this.world.items[this.PCState.profile.indexPC].loc) )  // not here
+				continue;
+
+				if (this.actionIsEnabled  (actionId, item1, j)) { // obj1 + action + obj2
+					this.choices.push ({choiceId:'action2', isLeafe:true, parent:"action2", action: { item1: item1, item1Id: this.world.items[item1].id, actionId: actionId, item2:j, item2Id: this.world.items[j].id }})
 				}
 			}
 		}
-
-		/*
-		if (choice.parent == 'notHere') {
-			// specially for absent items
-			if ( "itemsMemory for choice.item1 exists") {
-				this.choices.push ({choiceId:'action', isLeafe:true, parent:"obj1", action: { item1: choice.item1, actionId: "where" }})
-			}
-		}
-		*/
-
 	}
 
 }

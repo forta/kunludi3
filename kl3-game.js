@@ -78,7 +78,7 @@ function execCommand(com) {
 			console.log ("The game stats here!")
 			playGame()
 	} else if (com[0] == "game-action") {
-		console.log ("Game action: [" + com + "]")
+		// console.log ("Game action: [" + com + "]")
 
 		if (com[1] == "") return
 
@@ -86,7 +86,7 @@ function execCommand(com) {
 		getTurnState ()
 
 		let userCom = inputText_validation (com[1], turnState)
-		console.log ("userCom:" + JSON.stringify (userCom))
+		//console.log ("userCom:" + JSON.stringify (userCom))
 
 		if (userCom.com[0] == "q") return
 		if (userCom.value < 0) return
@@ -111,7 +111,7 @@ function execCommand(com) {
 function afterProcessInput() {
 	getTurnState ()
 
-	console.log ("turnState.turn: " + turnState.turn)
+	// console.log ("turnState.turn: " + turnState.turn)
 	showTurnState ()
 	console.log ("Awaiting Mode: " + awaitingModesArray[turnState.awaitingMode] + "\n")
 	newData = false
@@ -238,6 +238,7 @@ async function getTurnState () {
 	} else {
 		turnState.awaitingMode = 3 // standard
 		turnState.choices = kunludi_proxy.getChoices()
+		turnState.choicesOnItem = kunludi_proxy.getChoicesOnItem()
 	}
 
 }
@@ -245,26 +246,26 @@ async function getTurnState () {
 function showTurnState () {
 	if (turnState.turn<0) return
 
-	console.log ("Current turn: " + turnState.turn)
 	if (turnState.history.length >0) {
-		console.log ("\n┌----- Last Reaction --------┐")
+		console.log ("\n┌----- Last Reaction ----------------------------┐")
 		let lastHistoryReaction = turnState.history[turnState.history.length-1]
-		console.log ("\n# " + lastHistoryReaction.gameTurn + "\n")
-		console.log ("#Echo: " + kunludi_render.getChoice(lastHistoryReaction.action) + "\n")
+		console.log ("> " + lastHistoryReaction.gameTurn + ": " + kunludi_render.getChoice(lastHistoryReaction.action) + "\n")
 		//console.log ("#Reaction:")
 		kunludi_render.showReactionList(lastHistoryReaction.reactionList)
-		console.log ("└------ Last Reaction --------┘")
+		console.log ("└------ Last Reaction ----------------------------┘")
 	}
 
+	console.log ("Current turn: " + turnState.turn)
+
 	if (turnState.reactionList.length > 0) {
-		console.log ("\n┌----- Reaction in course --------┐")
+		console.log ("\n┌----- Reaction in course ----------------------------┐")
 		kunludi_render.showReactionList(turnState.reactionList)
-		console.log ("└------ Reaction in course --------┘")
+		console.log ("└------ Reaction in course ----------------------------┘")
 	}
 
 	//console.log ("\nPC State:" + JSON.stringify(kunludi_proxy.getPCState()) + "\n")
 
-	console.log ("┌-----Player choices ----------------------------┐\n")
+	console.log ("┌-----Player choices ----------------------------┐")
 	if (turnState.awaitingMode == 0) {
 		// to-do: input text
 	} else if (turnState.awaitingMode == 1) {
@@ -273,10 +274,7 @@ function showTurnState () {
 	} else if (turnState.awaitingMode == 2) {
 		kunludi_render.showMenu(turnState.menu)
 	} else { // turnState.awaitingMode == 3
-		kunludi_render.showChoiceList(turnState.choices)
-		if (turnState.selectedItem != "") {
-			console.log ("\nSelected Item: " + turnState.selectedItem + "\n")
-		}
+		kunludi_render.showChoiceList(turnState)
 	}
 	console.log ("└-----Player choices ----------------------------┘")
 }

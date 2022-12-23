@@ -37,6 +37,7 @@ module.exports = exports = { // commonjs
 
   getSlotId:getSlotId,
   getChoices:getChoices,
+  getChoicesOnItem:getChoicesOnItem,
 
   getCurrentChoice:getCurrentChoice,
 
@@ -320,6 +321,7 @@ function join(gameId, slotId) {
 
         data.devMessages = result.devMessages
         data.choices = result.choices
+        data.choicesOnItem = result.choicesOnItem
         data.processedReactionList = result.reactionList
         data.currentChoice = result.currentChoice
 
@@ -355,6 +357,10 @@ function join(gameId, slotId) {
 
 function getChoices() {
   return data.choices
+}
+
+function getChoicesOnItem() {
+  return data.choicesOnItem
 }
 
 function getCurrentChoice() {
@@ -626,6 +632,16 @@ function copyGameChoicesFromServer (result) {
 	for (let c in result.choices) {
 		data.choices.push (JSON.parse(JSON.stringify(result.choices[c])))
 	}
+
+  // copy choicesOnItem
+  data.choicesOnItem.item1 = result.choicesOnItem.item1
+	if (data.choicesOnItem.choices.length>0) {
+		data.choicesOnItem.choices.splice(0, data.choicesOnItem.choices.length) // empty array
+	}
+	for (let c in result.choicesOnItem.choices) {
+		data.choicesOnItem.choices.push (JSON.parse(JSON.stringify(result.choicesOnItem.choices[c])))
+	}
+
 }
 
 function copyGameDataFromServer (result) {

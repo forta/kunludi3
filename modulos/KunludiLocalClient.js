@@ -40,6 +40,7 @@ exports = module.exports =  {  //commonjs
   getGameSlotList:getGameSlotList,
 
   getChoices:getChoices,
+  getChoicesOnItem:getChoicesOnItem,
 
   getCurrentChoice:getCurrentChoice,
 
@@ -391,6 +392,10 @@ function getChoices() {
   return this.choices
 }
 
+function getChoicesOnItem() {
+  return this.choicesOnItem
+}
+
 function getCurrentChoice() {
   if (this.slotId=='') return
   return this.runner.getCurrentChoice()
@@ -662,10 +667,18 @@ function refreshCache () {
 
 	this.translation.PCState = JSON.parse(JSON.stringify(translatedStuff.PCState))
 	this.processedReactionList = translatedStuff.processedReactionList.slice()
+
 	this.choices = translatedStuff.choices
   for (var c in this.choices) {
     this.choices[c].txt_final = undefined
   }
+
+  // to-do: choicesOnItem
+  this.choicesOnItem = translatedStuff.choicesOnItem
+  for (var c in this.choicesOnItem.choices) {
+    this.choicesOnItem.choices[c].txt_final = undefined
+  }
+
 	this.history = translatedStuff.history
 	this.pendingChoice = this.runner.pendingChoice
 

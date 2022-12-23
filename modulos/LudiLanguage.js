@@ -623,6 +623,14 @@ function translateAll (locale, history, runner, translatedStuff) {
     this.choiceTranslation (translatedStuff.choices[c])
   }
 
+	// choicesOnItem
+	translatedStuff.choicesOnItem = {item1: runner.choicesOnItem.item1}
+  translatedStuff.choicesOnItem.choices = runner.choicesOnItem.choices.slice()
+  for (var c in translatedStuff.choicesOnItem.choices ) {
+    this.choiceTranslation (translatedStuff.choicesOnItem.choices[c])
+  }
+
+
   var initialPressKeyMessage = runner.pressKeyMessage
   translatedStuff.pressKeyMessage  = {txt: initialPressKeyMessage}
   if (runner.pendingPressKey) {

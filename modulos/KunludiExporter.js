@@ -79,6 +79,10 @@ async function exportData(turnState) {
   })
   .catch(e => {
     //console.error('*************************************** Error on launching exportData: ' +  e)
+    console.error('Error exporting data: ' +  e)
+    console.log('connector disabled\n')
+    connector.enabled = false
+
   });
 }
 

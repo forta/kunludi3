@@ -239,7 +239,7 @@ async function interaction_async() // Available only with `prompt-async`!
   // if playing exit
 	if (modName == "kl3-game") {
 	  com = await prompt_async.get(["game"]);
-		console.log ("typed command (game):" + JSON.stringify (com))
+		//console.log ("typed command (game):" + JSON.stringify (com))
 
 		if (com.game == "q") { // the same as ".."
 			interaction ("..")
@@ -252,7 +252,7 @@ async function interaction_async() // Available only with `prompt-async`!
 
 	} else {
 		  com = await prompt_async.get(["command"]);
-			console.log ("typed command (general):" + JSON.stringify (com))
+			//console.log ("typed command (general):" + JSON.stringify (com))
 
 			// reaction
 			interaction (com.command)

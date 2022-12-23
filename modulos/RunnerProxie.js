@@ -38,6 +38,7 @@ module.exports = exports = {  //commonjs
 	getGameIsOver:getGameIsOver,
 	//getChoiceFilter:getChoiceFilter,
 	getChoices:getChoices,
+	getChoicesOnItem:getChoicesOnItem,
 	getReactionList:getReactionList,
 	getMenu:getMenu,
 	getMenuPiece:getMenuPiece,
@@ -344,6 +345,15 @@ function getChoices() {
 		return kunludiClient.getChoices()
 	else {
 		return kunludiLocalClient.getChoices()
+	}
+}
+
+function getChoicesOnItem() {
+
+	if (connected)
+		return kunludiClient.getChoicesOnItem()
+	else {
+		return kunludiLocalClient.getChoicesOnItem()
 	}
 }
 

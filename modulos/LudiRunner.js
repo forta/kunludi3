@@ -34,6 +34,7 @@ module.exports = exports = { //commonjs
 	// vue2?:
   PCState: {profile: {indexPC:0, loc:2, item1:undefined} }, // loc:2?
 	choices: [],
+	choicesOnItem: {item1:-1, choices:[]},
 	world: []
 
 }
@@ -1052,12 +1053,18 @@ function updateChoices(showAll) {
 	if (choice.choiceId == 'obj1') {
 		this.updateChoicesWhenItemSelected(choice.item1) // former version
 	  // this.updateChoicesWhenItemSelected(this.PCState.profile.item1) // new version
+	} else {
+		this.choicesOnItem.item1 = -1
 	}
 
 }
 
 function updateChoicesWhenItemSelected(item1) {
-	console.log ("obj1 SELECTED: " + item1)
+
+  this.choicesOnItem.item1 = item1
+	this.choicesOnItem.choices = []
+
+	// console.log ("obj1 SELECTED: " + item1)
 
 	// if the item has items inside (container), show them
 	for (var itemInside=0; itemInside< this.world.items.length; itemInside++) {
@@ -1074,6 +1081,8 @@ function updateChoicesWhenItemSelected(item1) {
 			continue
 
 		this.choices.push ({choiceId:'obj1', item1: itemInside, item1Id: this.world.items[itemInside].id, parent:"inside", parentItem: item1});
+		// twice
+		this.choicesOnItem.choices.push ({choiceId:'obj1', item1: itemInside, item1Id: this.world.items[itemInside].id, parent:"inside", parentItem: item1});
 	}
 
 	// actions on the item
@@ -1083,6 +1092,8 @@ function updateChoicesWhenItemSelected(item1) {
 
 		if (this.actionIsEnabled  (actionId, item1)) { 		// obj1 + action
 			this.choices.push ({choiceId:'action', isLeafe:true, parent:"obj1", action: { item1: item1, item1Id: this.world.items[item1].id, actionId: actionId }})
+			// twice
+			this.choicesOnItem.choices.push  ({choiceId:'action', isLeafe:true, parent:"obj1", action: { item1: item1, item1Id: this.world.items[item1].id, actionId: actionId }})
 		} else {
 			var j=0
 			for (; j< this.world.items.length; j++) {
@@ -1096,6 +1107,8 @@ function updateChoicesWhenItemSelected(item1) {
 
 				if (this.actionIsEnabled  (actionId, item1, j)) { // obj1 + action + obj2
 					this.choices.push ({choiceId:'action2', isLeafe:true, parent:"action2", action: { item1: item1, item1Id: this.world.items[item1].id, actionId: actionId, item2:j, item2Id: this.world.items[j].id }})
+					// twice
+					this.choicesOnItem.choices.push  ({choiceId:'action2', isLeafe:true, parent:"action2", action: { item1: item1, item1Id: this.world.items[item1].id, actionId: actionId, item2:j, item2Id: this.world.items[j].id }})
 				}
 			}
 		}

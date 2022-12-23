@@ -41,7 +41,7 @@ function showReaction(reaction) {
 }
 
 function showMenu(menu) {
-  let outStr = "Menu:\n| "
+  let outStr = "Menu:| "
   for (let m=0; m<menu.length;m++) {
       outStr += m + ": " + menu[m].i8n.es.txt +  " | "
   }
@@ -49,11 +49,12 @@ function showMenu(menu) {
 
 }
 
-function showChoiceList(choiceList) {
+function showChoiceList(turnState) {
+  let choiceList = turnState.choices
   // Grupos: choiceId": top, directActions, directionGroup, itemGroup (itemGroup: here, carrying)
 
   // acciones directas: "choiceId":"action0
-  let outStr = "Acciones Directas:\n| "
+  let outStr = "Acciones Directas:| "
   for (let c=0; c<choiceList.length;c++) {
     if (choiceList[c].choiceId == "action0") {
       outStr += c + ": " + getChoice(choiceList[c]) + " | "
@@ -62,7 +63,7 @@ function showChoiceList(choiceList) {
   console.log (outStr)
 
   // direcciones directas:  "choiceId":"dir1"
-  outStr = "Direcciones:\n| "
+  outStr = "Direcciones:| "
   for (let c=0; c<choiceList.length;c++) {
     if (choiceList[c].choiceId == "dir1") {
       outStr += c + ": " + getChoice(choiceList[c])  + " | "
@@ -71,7 +72,7 @@ function showChoiceList(choiceList) {
   console.log (outStr)
 
   // items
-  outStr = "Items:\n| "
+  outStr = "Items:| "
   for (let c=0; c<choiceList.length;c++) {
     if (choiceList[c].choiceId == "obj1") {
       outStr += c + ": " + getChoice(choiceList[c]) + " | "
@@ -80,21 +81,30 @@ function showChoiceList(choiceList) {
   console.log (outStr)
 
   // on selected item
-  outStr = "On selected item:\n| "
-  for (let c=0; c<choiceList.length;c++) {
-    if ((choiceList[c].choiceId == "action") || (choiceList[c].choiceId == "action2")) {
-        outStr += c + ": " + getChoice(choiceList[c])  + " | "
+  if (turnState.selectedItem != "") {
+  //if (turnState.choicesOnItem.item1 != -1) {
+    outStr = "Selected Item: " + turnState.selectedItem + "|"
+
+    // first version
+
+    for (let c=0; c<choiceList.length;c++) {
+      if ((choiceList[c].choiceId == "action") || (choiceList[c].choiceId == "action2")) {
+          outStr += c + ": " + getChoice(choiceList[c])  + " | "
+      }
     }
-  }
-  console.log (outStr)
 
-  //resto
-  /*
-  for (let c=0; c<choiceList.length;c++) {
-      console.log ("\t>" + c + ": " + JSON.stringify(choiceList[c]))
-  }
-  */
 
+    // second version
+    /*
+    for (let c=0; c<turnState.choicesOnItem.choices.length;c++) {
+      if ((turnState.choicesOnItem.choices[c].choiceId == "action") || (turnState.choicesOnItem.choices[c].choiceId == "action2")) {
+         outStr += "A" + c + ": " + getChoice(turnState.choicesOnItem.choices[c])  + " | "
+      }
+    }
+    */
+
+    console.log (outStr)
+  }
 
 }
 

@@ -38,6 +38,48 @@ function wrapperSt(st) { return "<" + st + ">" }
 
 /**************************************/
 
+function text2HTML(text) {
+  const convTable = {
+    '\t': '&nbsp;&nbsp;&nbsp;&nbsp;',
+    '\r\n': '<br>',
+    '\r': '<br>',
+    '\n': '<br>',
+    '\"': '&quot;',
+    '\&': '&amp;',
+    '\<': '&lt;',
+    '\>': '&gt;'
+  };
+
+  return text.replace(/[\t\r\n\"\<\>\&]/g, function(match) {
+    return convTable[match];
+  });
+}
+
+function showTextCR (htmlId, text) {
+	if (text == "#clean#") {
+	 	showText (htmlId, "#clean#")
+		showText (htmlId, "\n")
+	} else {
+		showText	(htmlId, text + "\n")
+	}
+}
+
+function showText (htmlId, text) {
+	// to-do: \t -> &#9;
+	// to-do: \n -> <br/>
+
+  // Comprueba si se está ejecutando en un navegador
+  if (typeof window !== 'undefined') {
+    // Si es así, muestra la información en un elemento web
+    const elemento = window.document.getElementById(htmlId);
+		if (text == "#clean#") elemento.innerHTML = "";
+    elemento.innerHTML += text2HTML(text);
+  } else {
+    // Si no, muestra la información por consola
+    console.log(text);
+  }
+}
+
 function getModName() {
   return modName
 }
@@ -181,8 +223,10 @@ function getCommands () {
 }
 
 function showCommands (context) {
-	console.log ("Module name: " + modName)
-	console.log ("Available commands:")
+
+	showTextCR ("kl3-area", "#clean#")
+	showTextCR ("kl3-area", "Module name: " + modName)
+  showTextCR ("kl3-area", "Available commands:")
 	for (let c in commandsPtr) {
 		let aliasesStr = ""
 		if (commandsPtr[c].aliases.length > 0) {
@@ -193,15 +237,15 @@ function showCommands (context) {
 			aliasesStr += ")"
 		}
 		let numParsStr = (commandsPtr[c].numPars >0)? " (num pars: " + commandsPtr[c].numPars + ")": ""
-		console.log ("\t" + c + "> " + commandsPtr[c].id + numParsStr + aliasesStr)
+		showTextCR ("kl3-area", "\t" + c + "> " + commandsPtr[c].id + numParsStr + aliasesStr)
 	}
-	console.log ("Available subcontexts:")
+showTextCR ("kl3-area","Available subcontexts:")
 	for (let c in contextsPtr) {
-		console.log ("\t" + c + "> " + contextsPtr[c].id)
+		showTextCR ("kl3-area","\t" + c + "> " + contextsPtr[c].id)
 	}
-	console.log ("Available languages:")
+	showTextCR ("kl3-area", "Available languages:")
 	for (let loc in locales) {
-		console.log ("\t" + loc + "> " + locales[loc].id + ((localeIndex==loc)?"*":""))
+		showTextCR ("kl3-area", "\t" + loc + "> " + locales[loc].id + ((localeIndex==loc)?"*":""))
 	}
 
 }

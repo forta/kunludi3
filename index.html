@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Mi Página Web</title>
+  <script src="./kunludi3-bundle.js" type="module"></script>
+
+</head>
+<body onLoad="K3.init()">
+  <h1>Mi Página Web Wai</h1>
+  
+  <input type="text" id="commandInput" placeholder="Ingresa un comando y presiona Enter"><br/><br/>
+
+  <div id="kl3-area"/>
+
+  <script type="module">
+    // Obtén el elemento de entrada de texto
+    const commandInput = document.getElementById('commandInput');
+
+    // Agrega un evento para detectar cuando se presiona la tecla Enter
+    commandInput.addEventListener('keydown', (event) => {
+      if (event.keyCode === 13) { // Código de tecla Enter
+        const comando = commandInput.value; // Obtén el valor del comando ingresado
+        K3.interaction(comando); // Llama a la función de interacción definida en el módulo
+        commandInput.value = ''; // Limpia el cuadro de entrada de texto
+      }
+    });
+
+    /*
+    // Agrega un evento para ejecutar la función init() cuando la página esté cargada
+    document.addEventListener('DOMContentLoaded', () => {
+      init(); // Ejecuta la función init() definida en el módulo
+    });
+    */
+  </script>
+</body>
+</html>

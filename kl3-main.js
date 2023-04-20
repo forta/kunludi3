@@ -10,7 +10,8 @@
 */
 
 //var crumbs = require ('kl3-crumbs') // the multilingual breadcrumbs
-delete require.cache[require.resolve('./modulos/kl3-crumbs/index.js')]
+// comment managinr browserify error
+//delete require.cache[require.resolve('./modulos/kl3-crumbs/index.js')]
 let crumbs = require ('./modulos/kl3-crumbs/index.js')
 
 // state

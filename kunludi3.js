@@ -1,6 +1,13 @@
-const prompt_async = require("prompt-async");
+module.exports = exports = { //commonjs
+//export default {
+	init:init,
+	interaction:interaction,
+	getModName:getModName,
+	processModuleCommand:processModuleCommand
+}
 
 const kunludi_proxy = require ('./modulos/RunnerProxie.js');
+const mod_kl3_main = require ("./kl3-main.js")
 
 let modName
 let modPath
@@ -10,6 +17,20 @@ let stack = []
 let state = {
 	"kl3-loader": {rol:"host", game: {loaded:false} },
 	"kl3-connector": {url: "127.0.0.1:3000", enabled: false, token:-1}
+}
+
+// Hack to compile Glob files. Don´t call this function!
+// ref: https://stackoverflow.com/questions/21642398/compiling-dynamically-required-modules-with-browserify
+function tricky() {
+	require('./kl3-loader.js')
+	require('./kl3-game.js')
+  //require('./*.js', { glob: true })
+	//require('./*.js', {mode: 'expand'})
+	//require('./modulo/*.js', { glob: true })
+}
+
+function getModName () {
+		return modName
 }
 
 function refreshCommands () {
@@ -117,8 +138,13 @@ function processModuleCommand (com) {
 
 		modName = com[1]
 		let modPath = "./" + modName + ".js"
+
+    console.log ("require.resolve(modPath): " + JSON.stringify (require.resolve(modPath)))
 		delete require.cache[require.resolve(modPath)]
-		currentMod = require (modPath)
+		//delete require.cache[modPath]
+    //delete require.cache[global.require.resolve(modPath)] // neede for browserify
+
+ 	  currentMod = require (modPath)
 		crumbs = currentMod.getCrumbs()
 		crumbs.setModName (modName)
 
@@ -147,7 +173,11 @@ function processModuleCommand (com) {
 		let previousEntry = stack.pop()
 		modName = previousEntry.modName
 		let modPath = "./" + modName + ".js"
+
 		delete require.cache[require.resolve(modPath)]
+		//delete require.cache[modPath]
+    //delete require.cache[global.require.resolve(modPath)] // neede for browserify
+
 		currentMod = require (modPath)
 		crumbs = currentMod.getCrumbs()
 		crumbs.setModName (modName)
@@ -182,7 +212,7 @@ function init() {
 	// init
 	modName = "kl3-main"
 	modPath = "./" + modName + ".js"
-	currentMod = require (modPath)
+	currentMod = mod_kl3_main
 	crumbs = currentMod.getCrumbs()
 	crumbs.setModName (modName)
 	let com = [""]
@@ -193,7 +223,7 @@ function interaction(typedCommand) {
 
 		//console.log ("stack: " + JSON.stringify(stack))
 
-		com = typedCommand.split(" ")
+		let com = typedCommand.split(" ")
 		if (! inputPreprocessing (com)) {
 			return
 		}
@@ -230,50 +260,4 @@ function interaction(typedCommand) {
 		}
 }
 
-async function interaction_async() // Available only with `prompt-async`!
-{
-	// Start the prompt.
-  prompt_async.start();
-  let com
-
-  // if playing exit
-	if (modName == "kl3-game") {
-	  com = await prompt_async.get(["game"]);
-		//console.log ("typed command (game):" + JSON.stringify (com))
-
-		if (com.game == "q") { // the same as ".."
-			interaction ("..")
-			return
-		}
-
-		// send command to kl3-game
-		let gameCommand = "game-action " + com.game
-		processModuleCommand (gameCommand.split(" "))
-
-	} else {
-		  com = await prompt_async.get(["command"]);
-			//console.log ("typed command (general):" + JSON.stringify (com))
-
-			// reaction
-			interaction (com.command)
-	}
-
-}
-
-// sync version
-async function mainLoop_async()
-{
-	for (;;) {
-    try
-    {
-        await interaction_async();
-    }
-    catch(error)
-    {
-        console.error("An error occurred: ", error);
-    }
-	}
-}
-
-init()
-mainLoop_async();
+//init()
